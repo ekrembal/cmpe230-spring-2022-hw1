@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "stack.h"
+#include "string_operations.h"
 
 char allowedCharacters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_[],{}():*+-.#=";
 bool isAllowdCharacter[256];
@@ -17,14 +18,7 @@ bool isAllowedCharacter(char c) {
 	return isAllowdCharacter[(int)c];
 }
 
-void stripLeft(char *str) {
-	int i = 0;
-	while (str[i] != '\0') {
-		if (str[i] != ' ' && str[i] != '\t' && str[i] != '\n' && str[i] != '\r' && str[i] != '\v' && str[i] != '\f')
-			str++;
-	}
-	// strcpy(str, str + i);
-}
+
 
 void formatString(char *str)
 {
@@ -42,16 +36,11 @@ void formatString(char *str)
 			break;
 		}
 	}
-	stripLeft(str);
+	str = stripLeft(str);
 }
 
 int main(int argc, char *argv[])
 {
-	//test stripLeft
-	char* of = "  asdfghj";
-	stripLeft(of);
-	printf("NEW STRING IS ###%s\n", of);
-	// printf("%d",(int)startsWith("hela", "hellooooo"));
 	int i;
 	for (i = 0; i < 256; i++)
 	{
@@ -63,7 +52,9 @@ int main(int argc, char *argv[])
 	}
 	// Get the input file name
 	char *input_file_name = argv[1];
+	char *output_file_name = "file.c";
 	printf("input filename is %s\n", input_file_name);
+	printf("output filename is %s\n", output_file_name);
 	// Open file
 	FILE *input_file = fopen(input_file_name, "r");
 	if (input_file == NULL)
@@ -76,12 +67,16 @@ int main(int argc, char *argv[])
 	while (fgets(line, sizeof(line), input_file) != NULL)
 	{
 		formatString(line);
+
+		printf("%s\n", line);
 		if(startsWith("scalar", line)){
 			printf("Creating a scalar\n");
+			// print("struct variable " + line + " = createScalar();\n");
 			// strcpy(line, line + strlen("scalar"));
 			// stripLeft(line);
-			// printf("%s\n", line);
+			printf("%s\n", line);
 			// Erase scalar from line
+
 
 		} else if(startsWith("vector", line)){
 			printf("Creating a vector\n");
@@ -97,6 +92,9 @@ int main(int argc, char *argv[])
 			printf("End of a block\n");
 		} else if(strlen(line) > 0){
 			printf("This is an assignment\n");
+			
+		printf("%s\n", line);
+			printf("%s\n", parseAssignment(line));
 		} else{
 			printf("Empty line\n");
 		}

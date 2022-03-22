@@ -10,6 +10,12 @@ struct variable multiply(struct variable, struct variable);
 void add(struct variable, struct variable);
 void subtract(struct variable, struct variable);
 
+struct matrix multiply(struct matrix, struct scalar){
+}
+
+struct matrix multiply(struct matrix, struct matrix){
+}
+
 /*
 # this program computes fibonacci
 # numbers
@@ -37,12 +43,12 @@ for(i in 1:n:1) {
 
 
 int main(){
-i = createScalar();
-n = createScalar();
-x = createVector(2);
-y = createVector(2);
-A = createMatrix(2,2);
-B = createMatrix(2,2);
+struct variable i = createScalar();
+struct variable n = createScalar();
+struct variable x = createVector(2);
+struct variable y = createVector(2);
+struct variable A = createMatrix(2,2);
+struct variable B = createMatrix(2,2);
 assign(n, 10);
 assign(x, 1, 1);
 assign(A, 1, 1, 1, 0);
