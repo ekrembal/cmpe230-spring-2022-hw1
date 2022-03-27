@@ -11,9 +11,32 @@ void add(struct variable, struct variable);
 void subtract(struct variable, struct variable);
 
 struct matrix multiply(struct matrix, struct scalar){
+    //for( int i = 0 ; i < matrix.dim1 ; i++ ){
+    //    for( int j = 0 ; j < matrix.dim2 ; j++ ){
+    //        matrix.a[i][j] = matrix.a[i][j] * scalar.a;
+    //    }
+    //}
+    
+    //Opening File
+    FILE *fp=fopen("file.c", "a");
+    if(fp==NULL) {
+        perror("Error opening file.");
+    }
+    fprintf(fp, "for( int i = 0 ; i < %d ; i++ ){\n", matrix.dim1);
+    fprintf(fp, "   for( int j = 0 ; j < %d ; j++ ){\n",matrix.dim2);
+    fprintf(fp, "       m", 2012);
+    fprintf(fp, "%s %s %s %d", "We", "are", "in", 2012);
+    fprintf(fp, "%s %s %s %d", "We", "are", "in", 2012);
+    fprintf(fp, "%s %s %s %d", "We", "are", "in", 2012);
+
+
+
+    // Closing File
+    fclose(fp);
 }
 
 struct matrix multiply(struct matrix, struct matrix){
+
 }
 
 /*
