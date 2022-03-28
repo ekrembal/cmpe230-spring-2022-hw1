@@ -34,7 +34,7 @@ int main(){
     char *result3 = parseExpression(str5);
     printf("%s\n", result3);
 
-    char *str6 = "F = b +d * c+ a";
+    char *str6 = "F = b +d[1, 2] * c+ a";
     char *result4 = parseAssignment(str6);
     printf("%s\n", result4);
 
@@ -47,5 +47,9 @@ int main(){
     // char *str7 = "a = matrix[1,2]";
     char *result5 = parseGetIndex(str7);
     printf("%s\n", result5);
+
+    char *str8 = "a = matrix[1,2]";
+    char *result6 = getStringBetween(str8, '[', ']');
+    printf("getStringBetween:%s#\n", result6);
     return 0;
 }

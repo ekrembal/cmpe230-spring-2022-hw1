@@ -5,18 +5,6 @@
 #include "stack.h"
 #include "string_operations.h"
 
-char allowedCharacters[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_[],{}():*+-.#=";
-bool isAllowdCharacter[256];
-
-bool startsWith(const char *pre, const char *str)
-{
-    return strncmp(pre, str, strlen(pre)) == 0;
-}
-
-
-bool isAllowedCharacter(char c) {
-	return isAllowdCharacter[(int)c];
-}
 
 
 
@@ -36,20 +24,11 @@ void formatString(char *str)
 			break;
 		}
 	}
-	str = stripLeft(str);
+	stripLeftInplace(str);
 }
 
 int main(int argc, char *argv[])
 {
-	int i;
-	for (i = 0; i < 256; i++)
-	{
-		isAllowdCharacter[i] = false;
-	}
-	for (i = 0; i < strlen(allowedCharacters); i++)
-	{
-		isAllowdCharacter[allowedCharacters[i]] = true;
-	}
 	// Get the input file name
 	char *input_file_name = argv[1];
 	char *output_file_name = "file.c";
@@ -63,42 +42,60 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	// Read file line by line
-	char line[256];
+	char line[1024];
 	while (fgets(line, sizeof(line), input_file) != NULL)
 	{
+		// printf("%s", line);
 		formatString(line);
 
-		printf("%s\n", line);
+		// printf("%s\n", line);
 		if(startsWith("scalar", line)){
-			printf("Creating a scalar\n");
+			// printf("Creating a scalar\n");
 			// print("struct variable " + line + " = createScalar();\n");
 			// strcpy(line, line + strlen("scalar"));
 			// stripLeft(line);
-			printf("%s\n", line);
+			// printf("%s\n", line);
 			// Erase scalar from line
+			printf("scalar %s", line + strlen("scalar"));
+			printf("= createScalar();\n");
 
 
 		} else if(startsWith("vector", line)){
-			printf("Creating a vector\n");
+
+			char *vector_name = line + strlen("vector");
+			char *vector_size = getStringBetween(vector_name, '[', ']');
+			stripLeft(vector_name);
+			int firstOpeningIndex = findIndex(vector_name, '[');
+			vector_name[firstOpeningIndex] = '\0';
+
+			printf("vector %s = createVector(%s);\n", vector_name, vector_size);
 		} else if(startsWith("matrix", line)){
-			printf("Creating a matrix\n");
+			char *vector_name = line + strlen("vector");
+			char *vector_size = getStringBetween(vector_name, '[', ']');
+			stripLeft(vector_name);
+			int firstOpeningIndex = findIndex(vector_name, '[');
+			vector_name[firstOpeningIndex] = '\0';
+
+			printf("matrix %s = createMatrix(%s);\n", vector_name, vector_size);
 		} else if(startsWith("printsep", line)){
-			printf("Printing a separator\n");
+			printf("printsep();\n");
 		} else if(startsWith("print", line)){
-			printf("Print is called\n");
+			// printf("%s\n", line);
+			printf("%s;\n", parseExpression(line));
 		} else if(startsWith("for", line)){
-			printf("For loop is called\n");
+			// printf("For loop is called\n");
+			printf("%s\n", line);
 		} else if(startsWith("}", line)){
-			printf("End of a block\n");
+			printf("}\n");
 		} else if(strlen(line) > 0){
-			printf("This is an assignment\n");
+			// printf("This is an assignment\n");
 			
-		printf("%s\n", line);
+		// printf("%s\n", line);
 			printf("%s\n", parseAssignment(line));
 		} else{
-			printf("Empty line\n");
+			printf("\n");
 		}
-		printf("%s\n", line);
+		// printf("%s\n", line);
 	}
 	// Close file
 	fclose(input_file);

@@ -6,15 +6,75 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+bool isVariableChar(char c) {
+    if(c >= 'a' && c <= 'z')
+        return true;
+    if(c >= 'A' && c <= 'Z')
+        return true;
+    if(c >= '0' && c <= '9')
+        return true;
+    if(c == '_')
+        return true;
+    return false;
+}
+
+bool isAllowedCharacter(char c) {
+    if(c >= 'a' && c <= 'z')
+        return true;
+    if(c >= 'A' && c <= 'Z')
+        return true;
+    if(c >= '0' && c <= '9')
+        return true;
+    switch(c) {
+        case '_':
+        case '[':
+        case ']':
+        case ',':
+        case '{':
+        case '}':
+        case '(':
+        case ')':
+        case ':':
+        case '*':
+        case '+':
+        case '-':
+        case '.':
+        case '#':
+        case '=':
+            return true;
+    }
+    return false;
+}
+
+bool isWhiteSpace(char c) {
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f');
+}
+
 typedef struct stringPair {
     char* first;
     char* second;
 } stringPair;
 
 char *stripLeft(char *str) {
-    while(str[0] == ' ' || str[0] == '\t' || str[0] == '\n' || str[0] == '\r' || str[0] == '\v' || str[0] == '\f')
+    while(isWhiteSpace(str[0]))
         str++;
     return str;
+}
+
+void stripLeftInplace(char *str) {
+	int i = 0;
+	while (isWhiteSpace(str[i]))
+		i++;
+	for(int j = i; str[j] != '\0'; j++) {
+		str[j - i] = str[j];
+	}
+	str[strlen(str) - i] = '\0';
+}
+
+bool startsWith(const char *pre, const char *str)
+{
+    return strncmp(pre, str, strlen(pre)) == 0;
 }
 
 stringPair split(char *str, char delimiter) {
@@ -51,16 +111,32 @@ int findIndex(char *str, char delimiter) {
     return -1;
 }
 
-bool isVariableChar(char c) {
-    if(c >= 'a' && c <= 'z')
-        return true;
-    if(c >= 'A' && c <= 'Z')
-        return true;
-    if(c >= '0' && c <= '9')
-        return true;
-    if(c == '_')
-        return true;
-    return false;
+
+char *getStringBetween(char *str, char start, char end) {
+    int i = 0;
+    while(str[i] != '\0') {
+        if(str[i] == start) {
+            i++;
+            break;
+        }
+        i++;
+    }
+    int j = 0;
+    while(str[i+j] != '\0') {
+        if(str[i+j] == end) {
+            break;
+        }
+        j++;
+    }
+    char *result = (char*)malloc(sizeof(char) * (j + 1));
+    int k = 0;
+    while(k < j) {
+        result[k] = str[i];
+        i++;
+        k++;
+    }
+    result[k] = '\0';
+    return result;
 }
 
 char *parseGetIndex(char *str){
