@@ -274,6 +274,8 @@ char *parseAssignment(char *str) {
     return resultt;
 }
 
+// char *removeConsecu
+
 
 
 #endif
