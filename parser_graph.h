@@ -2,6 +2,8 @@
 #define _char_graph_h
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
 #define MAX_CHAR_GRAPH_SIZE 256
 
 // Enum for all token types
@@ -35,6 +37,67 @@ enum token_type {
     TR // tr
 };
 
+char *enumToString(int type){
+    switch(type){
+        case START:
+            return "START";
+        case IDENTIFIER:
+            return "IDENTIFIER";
+        case NUMBER:
+            return "NUMBER";
+        case ASSIGNMENT:
+            return "ASSIGNMENT";
+        case ADDITION:
+            return "ADDITION";
+        case SUBTRACTION:
+            return "SUBTRACTION";
+        case MULTIPLICATION:
+            return "MULTIPLICATION";
+        case LEFT_PARENTHESIS:
+            return "LEFT_PARENTHESIS";
+        case RIGHT_PARENTHESIS:
+            return "RIGHT_PARENTHESIS";
+        case LEFT_BRACKET:
+            return "LEFT_BRACKET";
+        case RIGHT_BRACKET:
+            return "RIGHT_BRACKET";
+        case LEFT_BRACE:
+            return "LEFT_BRACE";
+        case RIGHT_BRACE:
+            return "RIGHT_BRACE";
+        case COMMA:
+            return "COMMA";
+        case FOR:
+            return "FOR";
+        case PRINT:
+            return "PRINT";
+        case PRINTSEP:
+            return "PRINTSEP";
+        case SCALAR:
+            return "SCALAR";
+        case VECTOR:
+            return "VECTOR";
+        case MATRIX:
+            return "MATRIX";
+        case UNKNOWN:
+            return "UNKNOWN";
+        case IN:
+            return "IN";
+        case TWO_DOTS:
+            return "TWO_DOTS";
+        case END_OF_FILE:
+            return "END_OF_FILE";
+        case SQRT:
+            return "SQRT";
+        case CHOOSE:
+            return "CHOOSE";
+        case TR:
+            return "TR";
+        default:
+            return "UNKNOWN";
+    }
+}
+
 int lastNodeId = 0;
 typedef struct ParserNode {
     int nodeId;
@@ -42,7 +105,6 @@ typedef struct ParserNode {
     char edgeChars[MAX_CHAR_GRAPH_SIZE];
     int edgeCount;
     int tokenType;
-    struct ParserNode *elseNode;
 } ParserNode;
 
 typedef struct ParserGraph {
@@ -105,6 +167,47 @@ ParserNode *createNode(int tokenType) {
 }
 
 /**
+ * @brief adds a word to the graph
+ */
+void addKeyword(ParserNode *root, char *word, int tokenType, ParserNode *elseNode) {
+    ParserNode *currentNode = root;
+    int u = strlen(word);
+    for(int i = 0; i < u; i++) {
+        bool found = false;
+        for(int j = 0; j < currentNode->edgeCount; j++) {
+            if(currentNode->edgeChars[j] == word[i]) {
+                currentNode = currentNode->edges[j];
+                found = true;
+                break;
+            }
+        }
+        if(found) {
+            continue;
+        }
+        ParserNode *nextNode = NULL;
+        if(i < u - 1){
+            nextNode = createNode(IDENTIFIER);
+        } else{
+            // printf("Adding %c %s\n", word[i], enumToString(tokenType));
+            nextNode = createNode(tokenType);
+        }
+        addEdge(currentNode, nextNode, word[i]);
+        if(i != 0){
+            addEdges(currentNode, elseNode,'a', word[i] - 1);
+            addEdges(currentNode, elseNode, word[i] + 1, 'z');
+            addEdges(currentNode, elseNode, 'A', 'Z');
+            addEdges(currentNode, elseNode, '0', '9');
+            addEdge(currentNode, elseNode, '_');
+        }
+        currentNode = nextNode;
+    }
+    addEdges(currentNode, elseNode,'a', 'z');
+    addEdges(currentNode, elseNode, 'A', 'Z');
+    addEdges(currentNode, elseNode, '0', '9');
+    addEdge(currentNode, elseNode, '_');
+
+}
+/**
  * @brief Generates a new ParserGraph
  * 
  */
@@ -121,8 +224,28 @@ ParserGraph *createParserGraph() {
     addEdges(dotNode, decimalNumberNode, '0', '9');
     addEdges(decimalNumberNode, decimalNumberNode, '0', '9');
 
+    // graph->root->edgeChars[graph->root->edgeCount] = '\0';
+    // printf("DEBUGGG #%s# %d\n", graph->root->edgeChars, graph->root->edgeCount);
 
     ParserNode *identifierNode = createNode(IDENTIFIER);
+
+
+    addKeyword(graph->root, "for", FOR, identifierNode);
+    addKeyword(graph->root, "print", PRINT, identifierNode);
+    addKeyword(graph->root, "printsep", PRINTSEP, identifierNode);
+    addKeyword(graph->root, "scalar", SCALAR, identifierNode);
+    addKeyword(graph->root, "vector", VECTOR, identifierNode);
+    addKeyword(graph->root, "matrix", MATRIX, identifierNode);
+    addKeyword(graph->root, "in", IN, identifierNode);
+    addKeyword(graph->root, "sqrt", SQRT, identifierNode);
+    addKeyword(graph->root, "choose", CHOOSE, identifierNode);
+    addKeyword(graph->root, "tr", TR, identifierNode);
+
+    // graph->root->edgeChars[graph->root->edgeCount] = '\0';
+    // printf("DEBUGGG #%s# %d\n", graph->root->edgeChars, graph->root->edgeCount);
+    // return graph;
+
+
     addEdges(graph->root, identifierNode, 'a', 'z');
     addEdges(graph->root, identifierNode, 'A', 'Z');
     addEdge(graph->root, identifierNode, '_');
@@ -167,18 +290,37 @@ ParserGraph *createParserGraph() {
     ParserNode *twoDotsNode = createNode(TWO_DOTS);
     addEdge(graph->root, twoDotsNode, ':');
 
-    // addKeyword(graph->root, "for", FOR, identifierNode);
-    // addKeyword(graph->root, "print", PRINT, identifierNode);
-    // addKeyword(graph->root, "printsep", PRINTSEP, identifierNode);
-    // addKeyword(graph->root, "scalar", SCALAR, identifierNode);
-    // addKeyword(graph->root, "vector", VECTOR, identifierNode);
-    // addKeyword(graph->root, "matrix", MATRIX, identifierNode);
-    // addKeyword(graph->root, "in", IN, identifierNode);
-    // addKeyword(graph->root, "sqrt", SQRT, identifierNode);
-    // addKeyword(graph->root, "choose", CHOOSE, identifierNode);
-    // addKeyword(graph->root, "tr", TR, identifierNode);
 
     return graph;
+}
+
+void parseLine(ParserGraph *graph, char *line){
+    // ParserGraph *graph = createParserGraph();
+    int len = strlen(line);
+    ParserNode *currentNode = graph->root;
+    for(int i = 0; i <= len; i++){
+        // currentNode->edgeChars[currentNode->edgeCount] = '\0';
+        // printf("%s\n", currentNode->edgeChars);
+        bool found = false;
+        for(int j = 0; j < currentNode->edgeCount; j++){
+            if(currentNode->edgeChars[j] == line[i]){
+                currentNode = currentNode->edges[j];
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            if(currentNode == graph->root){
+                continue;
+            }
+            printf(" %s\n", enumToString(currentNode->tokenType));
+            currentNode = graph->root;
+            i--;
+        } else{
+            printf("%c", line[i]);
+        }
+        // printf("%c %d %d\n", line[i] , currentNode->tokenType, found);
+    }
 }
 
 #endif
