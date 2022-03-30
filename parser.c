@@ -4,7 +4,75 @@
 #include <stdbool.h>
 #include "stack.h"
 #include "string_operations.h"
+#include "parser_graph.h"
 #define MAX_TOKENS 1024
+
+// enum line_types {
+// 	FOR_LOOP,
+// 	DOUBLE_FOR_LOOP,
+// 	CREATING_SCALAR,
+// 	CREATING_VECTOR,
+// 	CREATING_MATRIX,
+// 	CONSTANT_ASSIGNMENT,
+// 	EXPRESSION_ASSIGNMENT,
+// 	PRINT,
+// 	PRINTSEP,
+// 	FOR_LOOP_END
+// };
+// enum token_type {
+//     START,
+//     IDENTIFIER, // <Identifier> starts with alpha or underscore and can contain numbers and underscores
+//     NUMBER, // <Number> starts with digit
+//     ASSIGNMENT, // =
+//     ADDITION, // +
+//     SUBTRACTION, // -
+//     MULTIPLICATION, // *
+//     LEFT_PARENTHESIS, // (
+//     RIGHT_PARENTHESIS, // )
+//     LEFT_BRACKET, // [
+//     RIGHT_BRACKET, // ]
+//     LEFT_BRACE, // {
+//     RIGHT_BRACE, // }
+//     COMMA, // ,
+//     FOR, // for
+//     PRINT, // print
+//     PRINTSEP, // printsep
+//     SCALAR, // scalar
+//     VECTOR, // vector
+//     MATRIX, // matrix
+//     UNKNOWN, // Unknown token
+//     IN, // in
+//     TWO_DOTS, // :
+//     END_OF_FILE, // EOF
+//     SQRT, // sqrt
+//     CHOOSE, // choose
+//     TR, // tr
+//     EXPRESSION,
+//     LIST_OF_NUMBERS
+// };
+
+int FOR_LOOP_TOKENS[] = {FOR, LEFT_PARENTHESIS, IDENTIFIER, IN, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, RIGHT_PARENTHESIS, LEFT_BRACE, -1};
+int DOUBLE_FOR_LOOP_TOKENS[] = {FOR, LEFT_PARENTHESIS, IDENTIFIER, COMMA, IDENTIFIER, IN, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, COMMA, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, RIGHT_PARENTHESIS, LEFT_BRACE, -1};
+int CREATING_SCALAR_TOKENS[] = {SCALAR, IDENTIFIER, -1};
+int CREATING_VECTOR_TOKENS[] = {VECTOR, IDENTIFIER, LEFT_BRACKET, NUMBER, RIGHT_BRACKET, -1};
+int CREATING_MATRIX_TOKENS[] = {MATRIX, IDENTIFIER, LEFT_BRACKET, NUMBER, COMMA, NUMBER, RIGHT_BRACKET, -1};
+int CONSTANT_ASSIGNMENT_TOKENS[] = {IDENTIFIER, ASSIGNMENT, LEFT_BRACE, LIST_OF_NUMBERS, RIGHT_BRACE, -1};
+int EXPRESSION_ASSIGNMENT_TOKENS[] = {IDENTIFIER, ASSIGNMENT, EXPRESSION, -1};
+int PRINT_TOKENS[] = {PRINT, LEFT_PARENTHESIS, EXPRESSION, RIGHT_PARENTHESIS, -1};
+// int PRINT_TOKENS[] = {PRINT, LEFT_PARENTHESIS, IDENTIFIER, RIGHT_PARENTHESIS, -1};
+int PRINTSEP_TOKENS[] = {PRINTSEP, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, -1};
+int FOR_LOOP_END_TOKENS[] = {RIGHT_BRACE, -1};
+
+bool isArraysEqual(int *arr1, int *arr2){
+	int i = 0;
+	while(arr1[i] != -1 && arr2[i] != -1){
+		if(arr1[i] != arr2[i]){
+			return false;
+		}
+		i++;
+	}
+	return (arr1[i] == -1 && arr2[i] == -1);
+}
 
 void giveError(int errorLine){
 	printf("Error in line %d\n", errorLine);
@@ -22,7 +90,7 @@ int tokenLen(int *tokens){
 
 void removeComments(char *str) {
 	int len = strlen(str);
-	for (i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++) {
 		if (str[i] == '#') {
 			str[i] = '\0';
 			break;
@@ -32,7 +100,7 @@ void removeComments(char *str) {
 
 bool isValidLine(char *str) {
 	int len = strlen(str);
-	for (i = 0; i < len; i++) {
+	for (int i = 0; i < len; i++) {
 		if (!isAllowedCharacter(str[i]) && !isWhiteSpace(str[i])) {
 			return false;
 		}
@@ -41,18 +109,6 @@ bool isValidLine(char *str) {
 }
 
 
-enum line_types {
-	FOR_LOOP,
-	DOUBLE_FOR_LOOP,
-	CREATING_SCALAR,
-	CREATING_VECTOR,
-	CREATING_MATRIX,
-	CONSTANT_ASSIGNMENT,
-	EXPRESSION_ASSIGNMENT,
-	PRINT,
-	PRINTSEP,
-	FOR_LOOP_END
-}
 
 
 int main(int argc, char *argv[]) {
@@ -81,22 +137,48 @@ int main(int argc, char *argv[]) {
 			giveError(lineCount);
 		// Tokenize line
 		tokenizeLine(graph, line, tokens);
-		// Get length of tokens
-		int len = tokenLen(tokens);
-		if(len == 0){
-			printf("Empyt line");
-		} else if(len > 0 && tokens[0] == SCALAR){
-			printf("SCALAR");
-		} else if(len > 0 && tokens[0] == VECTOR){
-			printf("VECTOR");
-		} else if(len > 0 && tokens[0] == MATRIX){
-			printf("MATRIX");
-		} else if(len > 0 && tokens[0] == PRINT){
-			printf("PRINT");
-		else if(len > 0 && tokens[0] == PRINTSEP){
-		} else if(len > 2 && tokens[0] == IDENTIFIER && tokens[1] == ASSIGNMENT && tokens[2] == LEFT_BRACE){
-			printf("CONSTANT ASSIGNMENT");
+		// int len = tokenLen(tokens);
+		// for(int i = 0; i < len; i++)
+		// 	printf("%d ", tokens[i]);
+		// printf("\n");
+
+		// printf("CREATING_VECTOR_TOKENS = ");
+		// len = tokenLen(CREATING_VECTOR_TOKENS);
+		// for(int i = 0; i < len; i++)
+		// 	printf("%d ", CREATING_VECTOR_TOKENS[i]);
+		// printf("\n");
+
+		// printf("CREATING_SCALAR_TOKENS = ");
+		// len = tokenLen(CREATING_SCALAR_TOKENS);
+		// for(int i = 0; i < len; i++)
+		// 	printf("%d ", CREATING_SCALAR_TOKENS[i]);
+		// printf("\n");
+		if(tokens[0] == -1){
+			continue;
+		} else if(isArraysEqual(tokens, CREATING_SCALAR_TOKENS)){
+			printf("CREATING SCALAR\n");
+		} else if(isArraysEqual(tokens, CREATING_VECTOR_TOKENS)){
+			printf("CREATING VECTOR\n");
+		} else if(isArraysEqual(tokens, CREATING_MATRIX_TOKENS)){
+			printf("CREATING MATRIX\n");
+		} else if(isArraysEqual(tokens, CONSTANT_ASSIGNMENT_TOKENS)){
+			printf("CONSTANT ASSIGNMENT\n");
+		} else if(isArraysEqual(tokens, EXPRESSION_ASSIGNMENT_TOKENS)){
+			printf("EXPRESSION ASSIGNMENT\n");
+		} else if(isArraysEqual(tokens, PRINT_TOKENS)){
+			printf("PRINT\n");
+		} else if(isArraysEqual(tokens, PRINTSEP_TOKENS)){
+			printf("PRINTSEP\n");
+		} else if(isArraysEqual(tokens, FOR_LOOP_TOKENS)){
+			printf("FOR LOOP\n");
+		} else if(isArraysEqual(tokens, DOUBLE_FOR_LOOP_TOKENS)){
+			printf("DOUBLE FOR LOOP\n");
+		} else if(isArraysEqual(tokens, FOR_LOOP_END_TOKENS)){
+			printf("FOR LOOP END\n");
+		} else {
+			printf("UNKNOWN\n");
 		}
+		printf("%s\n", line);
 
 	}
 	// Close file

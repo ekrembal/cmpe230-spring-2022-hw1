@@ -34,7 +34,9 @@ enum token_type {
     END_OF_FILE, // EOF
     SQRT, // sqrt
     CHOOSE, // choose
-    TR // tr
+    TR, // tr
+    EXPRESSION,
+    LIST_OF_NUMBERS
 };
 
 char *enumToString(int type){
@@ -344,11 +346,11 @@ void tokenizeLine(ParserGraph *graph, char *line, int *tokens){
                 continue;
             }
             tokens[lastToken++] = currentNode->tokenType;
-            printf(" %s\n", enumToString(currentNode->tokenType));
+            // printf(" %s\n", enumToString(currentNode->tokenType));
             currentNode = graph->root;
             i--;
         } else{
-            printf("%c", line[i]);
+            // printf("%c", line[i]);
         }
         // printf("%c %d %d\n", line[i] , currentNode->tokenType, found);
     }
