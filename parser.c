@@ -4,31 +4,58 @@
 #include <stdbool.h>
 #include "stack.h"
 #include "string_operations.h"
+#define MAX_TOKENS 1024
 
+void giveError(int errorLine){
+	printf("Error in line %d\n", errorLine);
+	exit(1);
+}
 
-
-
-void formatString(char *str)
-{
-	int i;
-	int len = strlen(str);
-	for (i = 0; i < len; i++)
-	{
-		if(!isAllowedCharacter(str[i]))
-		{
-			str[i] = ' ';
+int tokenLen(int *tokens){
+	for(int i = 0; i < MAX_TOKENS; i++){
+		if(tokens[i] == -1){
+			return i;
 		}
-		if (str[i] == '#')
-		{
+	}
+	return MAX_TOKENS;
+}
+
+void removeComments(char *str) {
+	int len = strlen(str);
+	for (i = 0; i < len; i++) {
+		if (str[i] == '#') {
 			str[i] = '\0';
 			break;
 		}
 	}
-	stripLeftInplace(str);
 }
 
-int main(int argc, char *argv[])
-{
+bool isValidLine(char *str) {
+	int len = strlen(str);
+	for (i = 0; i < len; i++) {
+		if (!isAllowedCharacter(str[i]) && !isWhiteSpace(str[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+enum line_types {
+	FOR_LOOP,
+	DOUBLE_FOR_LOOP,
+	CREATING_SCALAR,
+	CREATING_VECTOR,
+	CREATING_MATRIX,
+	CONSTANT_ASSIGNMENT,
+	EXPRESSION_ASSIGNMENT,
+	PRINT,
+	PRINTSEP,
+	FOR_LOOP_END
+}
+
+
+int main(int argc, char *argv[]) {
 	// Get the input file name
 	char *input_file_name = argv[1];
 	char *output_file_name = "file.c";
@@ -36,66 +63,41 @@ int main(int argc, char *argv[])
 	printf("output filename is %s\n", output_file_name);
 	// Open file
 	FILE *input_file = fopen(input_file_name, "r");
-	if (input_file == NULL)
-	{
+	if (input_file == NULL) {
 		printf("Error opening file\n");
 		return 1;
 	}
 	// Read file line by line
 	char line[1024];
-	while (fgets(line, sizeof(line), input_file) != NULL)
-	{
-		// printf("%s", line);
-		formatString(line);
-
-		// printf("%s\n", line);
-		if(startsWith("scalar", line)){
-			// printf("Creating a scalar\n");
-			// print("struct variable " + line + " = createScalar();\n");
-			// strcpy(line, line + strlen("scalar"));
-			// stripLeft(line);
-			// printf("%s\n", line);
-			// Erase scalar from line
-			printf("scalar %s", line + strlen("scalar"));
-			printf("= createScalar();\n");
-
-
-		} else if(startsWith("vector", line)){
-
-			char *vector_name = line + strlen("vector");
-			char *vector_size = getStringBetween(vector_name, '[', ']');
-			stripLeft(vector_name);
-			int firstOpeningIndex = findIndex(vector_name, '[');
-			vector_name[firstOpeningIndex] = '\0';
-
-			printf("vector %s = createVector(%s);\n", vector_name, vector_size);
-		} else if(startsWith("matrix", line)){
-			char *vector_name = line + strlen("vector");
-			char *vector_size = getStringBetween(vector_name, '[', ']');
-			stripLeft(vector_name);
-			int firstOpeningIndex = findIndex(vector_name, '[');
-			vector_name[firstOpeningIndex] = '\0';
-
-			printf("matrix %s = createMatrix(%s);\n", vector_name, vector_size);
-		} else if(startsWith("printsep", line)){
-			printf("printsep();\n");
-		} else if(startsWith("print", line)){
-			// printf("%s\n", line);
-			printf("%s;\n", parseExpression(line));
-		} else if(startsWith("for", line)){
-			// printf("For loop is called\n");
-			printf("%s\n", line);
-		} else if(startsWith("}", line)){
-			printf("}\n");
-		} else if(strlen(line) > 0){
-			// printf("This is an assignment\n");
-			
-		// printf("%s\n", line);
-			printf("%s\n", parseAssignment(line));
-		} else{
-			printf("\n");
+	int tokens[MAX_TOKENS];
+	ParserGraph *graph = createParserGraph();
+	int lineCount = 0;
+	while (fgets(line, sizeof(line), input_file) != NULL) {
+		lineCount++;
+		// Remove comments
+		removeComments(line);
+		// Check if line is valid
+		if (!isValidLine(line))
+			giveError(lineCount);
+		// Tokenize line
+		tokenizeLine(graph, line, tokens);
+		// Get length of tokens
+		int len = tokenLen(tokens);
+		if(len == 0){
+			printf("Empyt line");
+		} else if(len > 0 && tokens[0] == SCALAR){
+			printf("SCALAR");
+		} else if(len > 0 && tokens[0] == VECTOR){
+			printf("VECTOR");
+		} else if(len > 0 && tokens[0] == MATRIX){
+			printf("MATRIX");
+		} else if(len > 0 && tokens[0] == PRINT){
+			printf("PRINT");
+		else if(len > 0 && tokens[0] == PRINTSEP){
+		} else if(len > 2 && tokens[0] == IDENTIFIER && tokens[1] == ASSIGNMENT && tokens[2] == LEFT_BRACE){
+			printf("CONSTANT ASSIGNMENT");
 		}
-		// printf("%s\n", line);
+
 	}
 	// Close file
 	fclose(input_file);

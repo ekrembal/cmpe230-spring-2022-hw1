@@ -323,4 +323,36 @@ void parseLine(ParserGraph *graph, char *line){
     }
 }
 
+void tokenizeLine(ParserGraph *graph, char *line, int *tokens){
+    int lastToken = 0;
+    // ParserGraph *graph = createParserGraph();
+    int len = strlen(line);
+    ParserNode *currentNode = graph->root;
+    for(int i = 0; i <= len; i++){
+        // currentNode->edgeChars[currentNode->edgeCount] = '\0';
+        // printf("%s\n", currentNode->edgeChars);
+        bool found = false;
+        for(int j = 0; j < currentNode->edgeCount; j++){
+            if(currentNode->edgeChars[j] == line[i]){
+                currentNode = currentNode->edges[j];
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            if(currentNode == graph->root){
+                continue;
+            }
+            tokens[lastToken++] = currentNode->tokenType;
+            printf(" %s\n", enumToString(currentNode->tokenType));
+            currentNode = graph->root;
+            i--;
+        } else{
+            printf("%c", line[i]);
+        }
+        // printf("%c %d %d\n", line[i] , currentNode->tokenType, found);
+    }
+    tokens[lastToken] = -1;
+}
+
 #endif
