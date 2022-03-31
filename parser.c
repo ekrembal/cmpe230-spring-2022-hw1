@@ -209,6 +209,9 @@ int main(int argc, char *argv[]) {
 			printf("printsep();\n");
 		} else if(isArraysEqual(tokens, EXPRESSION_ASSIGNMENT_TOKENS)){
 			printf("EXPRESSION ASSIGNMENT\n");
+			// TODO: esittirin sol tarafindakini tespit et.
+			// TODO: esittirin sag tarafindaki esitlikleri tespit et.
+			// TODO: stackteki degerleri kontrol edip koda cevir.
 		} else if(isArraysEqual(tokens, PRINT_TOKENS)){
 			printf("PRINT\n");
 		} else if(isArraysEqual(tokens, FOR_LOOP_TOKENS)){

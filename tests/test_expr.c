@@ -17,13 +17,12 @@ int tokenLen(int *tokens){
 
 int main(){
     ParserGraph *graph = createParserGraph();
-    tokenizeLine(graph, "choose (i, 6, sqrt (x*y-5), choose (4, 1, tr ( i ) , 0 )) + choose (4, 1, tr ( x*9 ) , 0 )");
+    // tokenizeLine(graph, "choose(i,6,sqrt(x*y-5),choose(4,1, tr ( i ) , 0 )) + choose (4, 1, tr ( x*9 ) , 0 )");
+    tokenizeLine(graph, "5 + 5*4");
     int len = tokenLen(tokens);
     for(int i = 0; i < len; i++){
         printf("%s %s\n",tokenChars[i], enumToString(tokens[i]));
-        // if(tokens[i] == NUMBER){
-        //     printf("%d\n",atoi(tokenChars[i]));
-        // }
     }
+    printf("%d\n",expr(0, len - 1));
     return 0;
 }
