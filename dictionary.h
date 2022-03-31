@@ -1,56 +1,46 @@
 #ifndef _dictionary_h
 #define _dictionary_h
 #include<string.h>
-
-struct Node {
+// 1 ---> MATRIX       2 ----> VECTOR       3 ----> SCALAR
+struct dictNode {
     char name[256];
-    int isMatrix;
-    int isVector;
-    int isScalar;
+    int type;
     int dim1;
     int dim2;
     struct Node* next;
 };
 
-struct Dictionary{
-    struct Node* start;
-    struct Node* end;
+typedef struct Dictionary{
+    struct dictNode* start;
+    struct dictNode* end;
     int size;
-};
+}Dictionary;
 
 void add(struct Dictionary* dictionary, char *name, int type){
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    struct dictNode* newNode = (struct dictNode*)malloc(sizeof(struct dictNode));
+
     if(dictionary->start==NULL){
         dictionary->start=newNode;
+
     }
     strcpy(newNode->name,name);
-    if(type==1){
-        newNode->isMatrix=1;
+    newNode->type = type;
+    if(dictionary->size!=0){
+        dictionary->end->next = newNode;
     }
-    if(type==2){
-        newNode->isVector=1;
-    }
-    if(type==3){
-        newNode->isScalar=1;
-    }
-    dictionary->end->next = newNode;
     dictionary->end= newNode;
     dictionary->size++;
 }
 
 int query(struct Dictionary* dictionary,char *name){
-    struct Node* temp = dictionary->start;
-    while(temp->next!=NULL){
+    struct dictNode* temp = dictionary->start;
+    
+    while(1){
         if(strcmp(temp->name,name)==0){
-            if(temp->isMatrix==1){
-                return 1;
-            }
-            if(temp->isVector==1){
-                return 2;
-            }
-            if(temp->isScalar==1){
-                return 3;
-            }
+            return temp->type;
+        }
+        if(temp->next == NULL){
+            break;
         }
         temp=temp->next;
     }
@@ -70,23 +60,7 @@ struct Dictionary* createDictionary(){
     return dictionary;
 }
 
-// Here you can see the stack usage
 
-// struct Stack* temp = createStack();
-// push(temp, 5);
-// push(temp, 6);
-// push(temp, 7);
-// printf("%d\n", top(temp));
-// printf("%d\n", isEmpty(temp));
-// pop(temp);
-// printf("%d\n", top(temp));
-// printf("%d\n", isEmpty(temp));
-// pop(temp);
-// printf("%d\n", top(temp));
-// printf("%d\n", isEmpty(temp));
-// pop(temp);
-// printf("%d\n", isEmpty(temp));
-// printf("%d\n", top(temp));
 
 
 #endif
