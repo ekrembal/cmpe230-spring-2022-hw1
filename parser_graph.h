@@ -324,9 +324,16 @@ void parseLine(ParserGraph *graph, char *line){
         // printf("%c %d %d\n", line[i] , currentNode->tokenType, found);
     }
 }
+#define MAX_TOKENS 1024
 
-void tokenizeLine(ParserGraph *graph, char *line, int *tokens){
+int tokens[MAX_TOKENS];
+char tokenChars[MAX_TOKENS][MAX_TOKENS];
+
+
+// void tokenizeLine(ParserGraph *graph, char *line, int *tokens, char **tokenChars){
+void tokenizeLine(ParserGraph *graph, char *line){
     int lastToken = 0;
+    int lastChar = 0;
     // ParserGraph *graph = createParserGraph();
     int len = strlen(line);
     ParserNode *currentNode = graph->root;
@@ -345,12 +352,16 @@ void tokenizeLine(ParserGraph *graph, char *line, int *tokens){
             if(currentNode == graph->root){
                 continue;
             }
+            tokenChars[lastToken][lastChar] = '\0';
             tokens[lastToken++] = currentNode->tokenType;
+            lastChar = 0;
             // printf(" %s\n", enumToString(currentNode->tokenType));
             currentNode = graph->root;
             i--;
         } else{
-            // printf("%c", line[i]);
+            // add line[i] to tokenChars
+            tokenChars[lastToken][lastChar++] = line[i];
+            // printf("%c", line[i])
         }
         // printf("%c %d %d\n", line[i] , currentNode->tokenType, found);
     }

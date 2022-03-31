@@ -1,7 +1,9 @@
 matrix A [  1, 5]
-A = {1, 2, 3, 4, 5}
+A = {1 2 3 4 5}
 vector i [3]
-i = {-1, 0, 1}
+i = {1 0 1}
+
+i[1] = i[2] - i[3]
 
 matrix PRINTMATRIX [ 2, 2]
 

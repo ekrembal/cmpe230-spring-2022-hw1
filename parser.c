@@ -108,7 +108,22 @@ bool isValidLine(char *str) {
 	return true;
 }
 
-
+int checkConstantAssignment(){
+	if(!(tokens[0] == IDENTIFIER && tokens[1] == ASSIGNMENT && tokens[2] == LEFT_BRACE))
+		return 0;
+	int i = 3;
+	for(; tokens[i] != -1; i++){
+		if(tokens[i] == RIGHT_BRACE){
+			if(tokens[i + 1] == -1)
+				return i - 3;
+			else
+				return 0;
+		} else if(tokens[i] != NUMBER){
+			return 0;
+		}
+	}
+	return 0;
+}
 
 
 int main(int argc, char *argv[]) {
@@ -125,7 +140,6 @@ int main(int argc, char *argv[]) {
 	}
 	// Read file line by line
 	char line[1024];
-	int tokens[MAX_TOKENS];
 	ParserGraph *graph = createParserGraph();
 	int lineCount = 0;
 	while (fgets(line, sizeof(line), input_file) != NULL) {
@@ -136,10 +150,17 @@ int main(int argc, char *argv[]) {
 		if (!isValidLine(line))
 			giveError(lineCount);
 		// Tokenize line
-		tokenizeLine(graph, line, tokens);
-		// int len = tokenLen(tokens);
-		// for(int i = 0; i < len; i++)
-		// 	printf("%d ", tokens[i]);
+		// printf("GELDI");
+		// return 0;
+		tokenizeLine(graph, line);
+		
+		int len = tokenLen(tokens);
+		// for(int i = 0; i < len; i++){
+		// 	printf("OFFF %s %d\n",tokenChars[i], tokens[i]);
+		// 	if(tokens[i] == NUMBER){
+		// 		printf("%d\n",atoi(tokenChars[i]));
+		// 	}
+		// }
 		// printf("\n");
 
 		// printf("CREATING_VECTOR_TOKENS = ");
@@ -153,22 +174,43 @@ int main(int argc, char *argv[]) {
 		// for(int i = 0; i < len; i++)
 		// 	printf("%d ", CREATING_SCALAR_TOKENS[i]);
 		// printf("\n");
+		int constantAssignment = checkConstantAssignment();
 		if(tokens[0] == -1){
 			continue;
 		} else if(isArraysEqual(tokens, CREATING_SCALAR_TOKENS)){
 			printf("CREATING SCALAR\n");
+			// TODO: Check if variable is already declared
+			// TODO: Check if numbers are not floating point
+			printf("scalar %s = createScalar();\n", tokenChars[1]);
+			// TODO: add this scalar to dictionary
 		} else if(isArraysEqual(tokens, CREATING_VECTOR_TOKENS)){
-			printf("CREATING VECTOR\n");
+			printf("CREATING VECTOR with len %d\n", atoi(tokenChars[3]));
+			// TODO: Check if variable is already declared
+			// TODO: Check if numbers are not floating point
+			printf("vector %s = createVector(%d);\n", tokenChars[1], atoi(tokenChars[3]));
+			// TODO: add this vector to dictionary
 		} else if(isArraysEqual(tokens, CREATING_MATRIX_TOKENS)){
-			printf("CREATING MATRIX\n");
-		} else if(isArraysEqual(tokens, CONSTANT_ASSIGNMENT_TOKENS)){
-			printf("CONSTANT ASSIGNMENT\n");
+			printf("CREATING MATRIX with shape %d %d\n", atoi(tokenChars[3]), atoi(tokenChars[5]));
+			// TODO: Check if variable is already declared
+			// TODO: Check if numbers are not floating point
+			printf("matrix %s = createMatrix(%d, %d);\n", tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
+			// TODO: Add this matrix to dictionary
+		} else if(constantAssignment){
+			printf("CONSTANT ASSIGNMENT to the variable %s with %d numbers\n", tokenChars[0], constantAssignment);
+			// TODO: check if sizes match
+			printf("assignMultiple(%s, ", tokenChars[0]);
+			for(int i = 0; i < constantAssignment; i++){
+				printf("%s", tokenChars[i + 3]);
+				if(i != constantAssignment - 1)
+					printf(", ");
+			}
+			printf(");\n");
+		} else if(isArraysEqual(tokens, PRINTSEP_TOKENS)){
+			printf("printsep();\n");
 		} else if(isArraysEqual(tokens, EXPRESSION_ASSIGNMENT_TOKENS)){
 			printf("EXPRESSION ASSIGNMENT\n");
 		} else if(isArraysEqual(tokens, PRINT_TOKENS)){
 			printf("PRINT\n");
-		} else if(isArraysEqual(tokens, PRINTSEP_TOKENS)){
-			printf("PRINTSEP\n");
 		} else if(isArraysEqual(tokens, FOR_LOOP_TOKENS)){
 			printf("FOR LOOP\n");
 		} else if(isArraysEqual(tokens, DOUBLE_FOR_LOOP_TOKENS)){
