@@ -274,7 +274,21 @@ char *parseAssignment(char *str) {
     return resultt;
 }
 
-// char *removeConsecu
+char* removeMultipleSpaces(char* str){
+    char res[10000000];
+    int i=0,j=0;
+    while (str[i] != '\0'){
+        if((str[i] == ' ' && str[i+1] == ' ') != 1) {
+        res[j] = str[i];
+        j++;
+        }
+        i++;
+    }
+    res[j] = '\0';
+    return res;
+}
+
+
 
 
 

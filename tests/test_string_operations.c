@@ -51,5 +51,13 @@ int main(){
     char *str8 = "a = matrix[1,2]";
     char *result6 = getStringBetween(str8, '[', ']');
     printf("getStringBetween:%s#\n", result6);
+
+
+    char *str9 = "a     aa  btb sdf  dverasv      sjfhlmva 1";
+    char *result7 = removeMultipleSpaces(str9);
+    printf("removeMultipleSpaces:%s#\n", result7);
+
+
+
     return 0;
 }
