@@ -8,10 +8,10 @@ struct Node {
     struct Node* next;
 };
 
-struct Stack {
+typedef struct Stack {
     struct Node* top;
     int size;
-};
+} Struct;
 
 void push(struct Stack* stack, int data){
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));

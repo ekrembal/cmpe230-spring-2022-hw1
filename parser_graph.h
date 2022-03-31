@@ -242,6 +242,7 @@ ParserGraph *createParserGraph() {
     addKeyword(graph->root, "sqrt", SQRT, identifierNode);
     addKeyword(graph->root, "choose", CHOOSE, identifierNode);
     addKeyword(graph->root, "tr", TR, identifierNode);
+    // addKeyword(graph->root, "", SQRT, identifierNode);
 
     // graph->root->edgeChars[graph->root->edgeCount] = '\0';
     // printf("DEBUGGG #%s# %d\n", graph->root->edgeChars, graph->root->edgeCount);

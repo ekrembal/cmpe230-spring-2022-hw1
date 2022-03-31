@@ -58,7 +58,8 @@ int CREATING_VECTOR_TOKENS[] = {VECTOR, IDENTIFIER, LEFT_BRACKET, NUMBER, RIGHT_
 int CREATING_MATRIX_TOKENS[] = {MATRIX, IDENTIFIER, LEFT_BRACKET, NUMBER, COMMA, NUMBER, RIGHT_BRACKET, -1};
 int CONSTANT_ASSIGNMENT_TOKENS[] = {IDENTIFIER, ASSIGNMENT, LEFT_BRACE, LIST_OF_NUMBERS, RIGHT_BRACE, -1};
 int EXPRESSION_ASSIGNMENT_TOKENS[] = {IDENTIFIER, ASSIGNMENT, EXPRESSION, -1};
-int PRINT_TOKENS[] = {PRINT, LEFT_PARENTHESIS, EXPRESSION, RIGHT_PARENTHESIS, -1};
+int PRINT_SCALAR_TOKENS[] = {PRINT, LEFT_PARENTHESIS, EXPRESSION, RIGHT_PARENTHESIS, -1};
+int PRINT_VECTOR_TOKENS[] = {PRINT, LEFT_PARENTHESIS, EXPRESSION, RIGHT_PARENTHESIS, -1};
 // int PRINT_TOKENS[] = {PRINT, LEFT_PARENTHESIS, IDENTIFIER, RIGHT_PARENTHESIS, -1};
 int PRINTSEP_TOKENS[] = {PRINTSEP, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, -1};
 int FOR_LOOP_END_TOKENS[] = {RIGHT_BRACE, -1};
@@ -125,7 +126,6 @@ int checkConstantAssignment(){
 	return 0;
 }
 
-
 int main(int argc, char *argv[]) {
 	// Get the input file name
 	char *input_file_name = argv[1];
@@ -181,24 +181,24 @@ int main(int argc, char *argv[]) {
 			printf("CREATING SCALAR\n");
 			// TODO: Check if variable is already declared
 			// TODO: Check if numbers are not floating point
-			printf("scalar %s = createScalar();\n", tokenChars[1]);
+			printf("scalar _%s = createScalar();\n", tokenChars[1]);
 			// TODO: add this scalar to dictionary
 		} else if(isArraysEqual(tokens, CREATING_VECTOR_TOKENS)){
 			printf("CREATING VECTOR with len %d\n", atoi(tokenChars[3]));
 			// TODO: Check if variable is already declared
 			// TODO: Check if numbers are not floating point
-			printf("vector %s = createVector(%d);\n", tokenChars[1], atoi(tokenChars[3]));
+			printf("vector _%s = createVector(%d);\n", tokenChars[1], atoi(tokenChars[3]));
 			// TODO: add this vector to dictionary
 		} else if(isArraysEqual(tokens, CREATING_MATRIX_TOKENS)){
 			printf("CREATING MATRIX with shape %d %d\n", atoi(tokenChars[3]), atoi(tokenChars[5]));
 			// TODO: Check if variable is already declared
 			// TODO: Check if numbers are not floating point
-			printf("matrix %s = createMatrix(%d, %d);\n", tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
+			printf("matrix _%s = createMatrix(%d, %d);\n", tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
 			// TODO: Add this matrix to dictionary
 		} else if(constantAssignment){
 			printf("CONSTANT ASSIGNMENT to the variable %s with %d numbers\n", tokenChars[0], constantAssignment);
 			// TODO: check if sizes match
-			printf("assignMultiple(%s, ", tokenChars[0]);
+			printf("assignMultiple(_%s, ", tokenChars[0]);
 			for(int i = 0; i < constantAssignment; i++){
 				printf("%s", tokenChars[i + 3]);
 				if(i != constantAssignment - 1)
