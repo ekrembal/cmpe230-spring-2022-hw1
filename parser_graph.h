@@ -176,8 +176,16 @@ void addKeyword(ParserNode *root, char *word, int tokenType, ParserNode *elseNod
     int u = strlen(word);
     for(int i = 0; i < u; i++) {
         bool found = false;
+        ParserNode *nextNode = NULL;
+        if(i < u - 1){
+            nextNode = createNode(IDENTIFIER);
+        } else{
+            // printf("Adding %c %s\n", word[i], enumToString(tokenType));
+            nextNode = createNode(tokenType);
+        }
         for(int j = 0; j < currentNode->edgeCount; j++) {
             if(currentNode->edgeChars[j] == word[i]) {
+                currentNode->edges[j] = nextNode;
                 currentNode = currentNode->edges[j];
                 found = true;
                 break;
@@ -186,13 +194,7 @@ void addKeyword(ParserNode *root, char *word, int tokenType, ParserNode *elseNod
         if(found) {
             continue;
         }
-        ParserNode *nextNode = NULL;
-        if(i < u - 1){
-            nextNode = createNode(IDENTIFIER);
-        } else{
-            // printf("Adding %c %s\n", word[i], enumToString(tokenType));
-            nextNode = createNode(tokenType);
-        }
+        
         addEdge(currentNode, nextNode, word[i]);
         if(i != 0){
             addEdges(currentNode, elseNode,'a', word[i] - 1);
