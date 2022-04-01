@@ -1,12 +1,23 @@
 #define N 1000000
 #define M 1000
 struct variable{
-    bool isMatrix;
-    bool isVector;
-    bool isScalar;
-    int dim1, dim2;
+    int dim1, dim2, type;
     int *a;
 };
+
+
+struct variable{
+    int dim1, dim2, type;
+}
+
+tr(variable(5, 1, vector)) -> variable(1, 5, matrix)
+
+testMultiply(variable(2, 4, matrix) , variable(4, 2, matrix)) > variable(2, 2, matrix, [1, 2, 3, 4])
+testMultiply(variable(2, 4, matrix) , variable(3, 2, matrix)) > NULL
+
+multiply(a1, a2);
+
+
 struct matrix{
     int dim1;
     int dim2;

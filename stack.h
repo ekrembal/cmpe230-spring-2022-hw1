@@ -2,6 +2,16 @@
 #define _stack_h
 
 
+variable st[1024];
+int lastIndex;
+
+void add(Var x){
+    st[++lastIndex] = x;
+}
+
+Var top(){
+}
+
 
 struct Node {
     int data;
