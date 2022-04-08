@@ -1,7 +1,6 @@
 #ifndef _expr_h
 #define _expr_h
 #include "parser_graph.h"
-#include "stack_operations.h"
 
 #define DEBUG false
 
@@ -50,8 +49,6 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_PARENTHESIS
         )
         {
-            printf("sqrt ");
-            add_stack(Var())
             return tempLeft + 1;
         }
     tempLeft = 0;

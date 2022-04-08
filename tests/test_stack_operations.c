@@ -47,6 +47,7 @@ int main(){
 
     assert(sizeOfList(temp) == 3);
 
+    evaluateList(temp);
     printf("BITTI\n");
     
 
