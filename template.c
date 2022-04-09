@@ -252,12 +252,12 @@ void assignToFlatten(struct Variable * a , double var , int index ){
     a->val[row][column] = var ;
     return;
 }
-void assignToIndex(struct Variable * a, int index, struct Variable * var  ){
-    a->val[index - 1][0] = var->val[0][0];
+void assignToIndex(struct Variable * a, struct Variable * index, struct Variable * var  ){
+    a->val[(int)index->val[0][0] - 1][0] = var->val[0][0];
     return;
 }
-void assignToDoubleIndex(struct Variable * a, int index1, int index2, struct Variable * var ){
-    a->val[index1 - 1][index2 - 1] = var->val[0][0];
+void assignToDoubleIndex(struct Variable * a, struct Variable * index1, struct Variable* index2, struct Variable * var ){
+    a->val[(int)index1->val[0][0] - 1][(int)index2->val[0][0] - 1] = var->val[0][0];
     return;
 }
 //double* getDoublePointer(struct Variable a, int index){
