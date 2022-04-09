@@ -230,28 +230,28 @@ Variable *multiplication(Variable* a, Variable* b){
         newNode->feature = SCA;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
         addNewScalar(newNode->name);
     }
     else if(a->dim2 == b->dim1){
         newNode->feature = MAT;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else if(a->feature == SCA && b->feature == MAT){
         newNode->feature = MAT;
         newNode->dim1 = b->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else if(a->feature == MAT && b->feature == SCA){
         newNode->feature = MAT;
         newNode->dim1 = a->dim1;
         newNode->dim2 = a->dim2;
-        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{

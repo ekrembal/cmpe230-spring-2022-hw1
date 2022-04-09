@@ -13,9 +13,9 @@ print(x);
 Variable *NRTySFrzrmzlYGF = generateScalarFromNumber(1);
 Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(1);
 for(assign(i,NRTySFrzrmzlYGF); isLower(i,n); increase(i,vEulQfpDBHlqDqr)){
-Variable *rCRwDnXeuOQqekl = multiply(A, B);
+Variable *rCRwDnXeuOQqekl = multiplication(A, B);
 assign(B, rCRwDnXeuOQqekl);
-Variable *AITGDPHCSPIjtHb = multiply(B, x);
+Variable *AITGDPHCSPIjtHb = multiplication(B, x);
 assign(y, AITGDPHCSPIjtHb);
 print(getSingleIndex(y, 1));
 }
