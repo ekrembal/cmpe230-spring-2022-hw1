@@ -3,80 +3,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-FILE *out;
-#include "stack.h"
-#include "string_operations.h"
+
+// #include "stack.h"
+#include "enums.h"
+#include "globals.h"
+#include "utils.h"
 #include "parser_graph.h"
 #include "stack_operations.h"
 #include "expr.h"
 #include "dictionary.h"
-#define MAX_TOKENS 1024
-int lineCount = 0;
 
-int CREATING_SCALAR_TOKENS[] = {SCALAR, IDENTIFIER, -1};
-int CREATING_VECTOR_TOKENS[] = {VECTOR, IDENTIFIER, LEFT_BRACKET, NUMBER, RIGHT_BRACKET, -1};
-int CREATING_MATRIX_TOKENS[] = {MATRIX, IDENTIFIER, LEFT_BRACKET, NUMBER, COMMA, NUMBER, RIGHT_BRACKET, -1};
-int CONSTANT_ASSIGNMENT_TOKENS[] = {IDENTIFIER, ASSIGNMENT, LEFT_BRACE, LIST_OF_NUMBERS, RIGHT_BRACE, -1};
-int EXPRESSION_ASSIGNMENT_TOKENS[] = {IDENTIFIER, ASSIGNMENT, EXPRESSION, -1};
-int PRINT_SCALAR_TOKENS[] = {PRINT, LEFT_PARENTHESIS, EXPRESSION, RIGHT_PARENTHESIS, -1};
-int PRINT_VECTOR_TOKENS[] = {PRINT, LEFT_PARENTHESIS, EXPRESSION, RIGHT_PARENTHESIS, -1};
-// int PRINT_TOKENS[] = {PRINT, LEFT_PARENTHESIS, IDENTIFIER, RIGHT_PARENTHESIS, -1};
-int PRINTSEP_TOKENS[] = {PRINTSEP, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, -1};
-int FOR_LOOP_END_TOKENS[] = {RIGHT_BRACE, -1};
-
-bool isArraysEqual(int *arr1, int *arr2){
-	int i = 0;
-	while(arr1[i] != -1 && arr2[i] != -1){
-		if(arr1[i] != arr2[i]){
-			return false;
-		}
-		i++;
-	}
-	return (arr1[i] == -1 && arr2[i] == -1);
-}
-
-void giveError(){
-	printf("Error in line %d\n", lineCount);
-    fclose(out);
-	exit(1);
-}
-
-void removeComments(char *str) {
-	int len = strlen(str);
-	for (int i = 0; i < len; i++) {
-		if (str[i] == '#') {
-			str[i] = '\0';
-			break;
-		}
-	}
-}
-
-bool isValidLine(char *str) {
-	int len = strlen(str);
-	for (int i = 0; i < len; i++) {
-		if (!isAllowedCharacter(str[i]) && !isWhiteSpace(str[i])) {
-			return false;
-		}
-	}
-	return true;
-}
-
-int checkConstantAssignment(){
-	if(!(tokens[0] == IDENTIFIER && tokens[1] == ASSIGNMENT && tokens[2] == LEFT_BRACE))
-		return 0;
-	int i = 3;
-	for(; tokens[i] != -1; i++){
-		if(tokens[i] == RIGHT_BRACE){
-			if(tokens[i + 1] == -1)
-				return i - 3;
-			else
-				return 0;
-		} else if(tokens[i] != NUMBER){
-			return 0;
-		}
-	}
-	return 0;
-}
 
 int main(int argc, char *argv[]) {
 	// Get the input file name

@@ -1,6 +1,6 @@
 #ifndef _expr_h
 #define _expr_h
-#include "parser_graph.h"
+// #include "parser_graph.h"
 
 #define DEBUG false
 
@@ -9,9 +9,6 @@ int term(int, int, bool);
 int expr(int, int, bool);
 int moreterms(int, int, bool);
 int morefactors(int, int, bool);
-
-int postTokens[1024];
-char postTokenChars[1024][1024];
 
 
 

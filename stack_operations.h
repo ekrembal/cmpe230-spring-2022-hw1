@@ -4,39 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "enums.h"
+#include "globals.h"
+#include "utils.h"
 
 
-
-
-typedef struct Variable {
-    char *name;
-    int feature;
-    // int variable_type;
-    int dim1,dim2;
-}Variable;
 #include "dictionary.h"
 
-typedef struct StackNode{
-    struct Variable* data;
-    struct StackNode* prev;
-}StackNode;
 
-typedef struct ListNode{
-    struct Variable* data;
-    struct ListNode* next;
-} ListNode;
-
-typedef struct Stack {
-    struct StackNode* top;
-    int size;
-} Stack;
-
-typedef struct List {
-    ListNode* start;
-    ListNode* end;
-    int size;
-} List;
-List globalList;
 
 
 void push(struct Stack* stack, struct Variable* data){

@@ -5,10 +5,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include "enums.h"
-#define MAX_CHAR_GRAPH_SIZE 256
 
-int tokens[1024];
-char tokenChars[1024][1024];
+
 
 int tokenLen(int *tokens){
 	for(int i = 0; i < 1024; i++){
@@ -82,18 +80,7 @@ char *enumToString(int type){
     }
 }
 
-int lastNodeId = 0;
-typedef struct ParserNode {
-    int nodeId;
-    struct ParserNode *edges[MAX_CHAR_GRAPH_SIZE];
-    char edgeChars[MAX_CHAR_GRAPH_SIZE];
-    int edgeCount;
-    int tokenType;
-} ParserNode;
 
-typedef struct ParserGraph {
-    struct ParserNode *root;
-} ParserGraph;
 
 /**
  * @brief Depth-first search of the graph
