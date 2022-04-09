@@ -18,60 +18,60 @@ int main(){
     for(int i = 0; i < len; i++){
         printf("%s %s\n",tokenChars[i], enumToString(tokens[i]));
     }
-    int last = expr(0, len - 1);
+    int last = parseExpression(0, len - 1);
 
     // for(int i = 0; i < len; i++){
     //     printf("%s %s\n",tokenChars[i], enumToString(tokens[i]));
     // }
     evaluateList(&globalList);
     return 0;
-    printf("BASLADI\n");
-    struct List* temp =    createList();
+    // printf("BASLADI\n");
+    // struct List* temp =    createList();
 
-    // assert(temp != NULL);
-    assert(sizeOfList(temp) == 0);
+    // // assert(temp != NULL);
+    // assert(sizeOfList(temp) == 0);
 
-    struct Variable var;
-    var.name = "5";
-    var.feature = NUM;
-    // var.variable_type = -1;
-    var.dim1=-1;
-    var.dim1=-1;
-    // var.next = NULL;
-
-
-    // assert(sizeOfList(temp) == 1);
+    // struct Variable var;
+    // var.name = "5";
+    // var.feature = NUM;
+    // // var.variable_type = -1;
+    // var.dim1=-1;
+    // var.dim1=-1;
+    // // var.next = NULL;
 
 
-    struct Variable var1;
-    var1.name = "+";
-    var1.feature = OP;
-    // var1.variable_type = 0;
-    var1.dim1=-1;
-    var1. dim1=-1;
-    // var1.next = NULL;
+    // // assert(sizeOfList(temp) == 1);
 
 
-    // assert(sizeOfList(temp) == 2);
-
-    struct Variable var2;
-    var2.name = "6";
-    var2.feature = NUM;
-    // var2.variable_type = -1;
-    var2.dim1=-1;
-    var2.dim1=-1;
-    // var2.next = NULL;
-
-    addToList(temp, &var);
-    addToList(temp, &var2);
-    addToList(temp, &var1);
+    // struct Variable var1;
+    // var1.name = "+";
+    // var1.feature = OP;
+    // // var1.variable_type = 0;
+    // var1.dim1=-1;
+    // var1. dim1=-1;
+    // // var1.next = NULL;
 
 
-    assert(sizeOfList(temp) == 3);
-    printf("sizeOfList: %d\n", sizeOfList(temp));
+    // // assert(sizeOfList(temp) == 2);
 
-    evaluateList(temp);
-    printf("BITTI\n");
+    // struct Variable var2;
+    // var2.name = "6";
+    // var2.feature = NUM;
+    // // var2.variable_type = -1;
+    // var2.dim1=-1;
+    // var2.dim1=-1;
+    // // var2.next = NULL;
+
+    // addToList(temp, &var);
+    // addToList(temp, &var2);
+    // addToList(temp, &var1);
+
+
+    // assert(sizeOfList(temp) == 3);
+    // printf("sizeOfList: %d\n", sizeOfList(temp));
+
+    // evaluateList(temp);
+    // printf("BITTI\n");
     
 
 

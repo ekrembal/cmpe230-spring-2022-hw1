@@ -177,8 +177,9 @@ int expr(int left, int right){
     return -1;
 }
 
-// int parseExpression(int left, int right){
-//     if(DEBUG){ printf("parseExpression(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n"); }
-//     return expr(int left, int right);
-// }
+int parseExpression(int left, int right){
+    if(DEBUG){ printf("parseExpression(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n"); }
+    globalList.size = 0;
+    return expr(left, right);
+}
 #endif

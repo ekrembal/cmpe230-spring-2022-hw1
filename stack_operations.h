@@ -355,7 +355,7 @@ Variable* evaluateList( struct List* list){
             }
 
         }
-        
+
     }
     if(stack->size != 1){
         raiseError();
