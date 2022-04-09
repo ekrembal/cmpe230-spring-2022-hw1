@@ -1,0 +1,17 @@
+Variable *A = createMatrix(4, 4);
+Variable *T = createMatrix(1, 1);
+Variable *x = createVector(4);
+Variable *xy2 = createVector(4);
+Variable *s = createScalar();
+assignToFlatten(A, 0, 0);assignToFlatten(A, 1, 1);assignToFlatten(A, 2, 2);assignToFlatten(A, 3, 3);assignToFlatten(A, 4, 4);assignToFlatten(A, 5, 5);assignToFlatten(A, 6, 6);assignToFlatten(A, 7, 7);assignToFlatten(A, 8, 8);assignToFlatten(A, 9, 9);assignToFlatten(A, 1, 10);assignToFlatten(A, 1, 11);assignToFlatten(A, 1, 12);assignToFlatten(A, 2, 13);assignToFlatten(A, 3, 14);assignToFlatten(A, 4, 15);
+assignToFlatten(x, 1, 0);assignToFlatten(x, 1, 1);assignToFlatten(x, 1, 2);assignToFlatten(x, 1, 3);
+assignToFlatten(xy2, 2, 0);assignToFlatten(xy2, 1, 1);assignToFlatten(xy2, 3, 2);assignToFlatten(xy2, 1, 3);
+Variable *lrfkQyuQFjKXyQV = transpose( x );
+Variable *NRTySFrzrmzlYGF = multiplication( xy2 , A );
+Variable *vEulQfpDBHlqDqr = multiplication( NRTySFrzrmzlYGF , lrfkQyuQFjKXyQV );
+assign(T, vEulQfpDBHlqDqr);
+Variable *AITGDPHCSPIjtHb = generateScalarFromNumber(1);
+Variable *sFyfvlADzPBfudk = generateScalarFromNumber(1);
+Variable *rCRwDnXeuOQqekl = getDoubleIndex( T, AITGDPHCSPIjtHb, sFyfvlADzPBfudk );
+assign(s, rCRwDnXeuOQqekl);
+print(s);

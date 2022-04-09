@@ -203,7 +203,7 @@ Variable* generateScalarFromNumber(Variable *var){
     newVar->feature = SCA;
     newVar->dim1 = 1;
     newVar->dim2 = 1;
-    printf("Var %s = generateScalarFromNumber(%s);\n", newVar->name, var->name);
+    fprintf(out, "Variable *%s = generateScalarFromNumber(%s);\n", newVar->name, var->name);
     return newVar;
 }
 
@@ -234,7 +234,7 @@ Variable* processVars(Variable* a, Variable* b, const char *op){
     // else{
     //     printf("ERROR");
     // }
-    printf("Variable %s = %s( %s , %s );\n",  rndstr,  op, a->name , b->name  );
+    fprintf(out, "Variable *%s = %s( %s , %s );\n",  rndstr,  op, a->name , b->name  );
     return newNode;
 }
 
@@ -246,7 +246,7 @@ Variable* processTr(Variable *a){
     if(a->feature == NUM){
         a = generateScalarFromNumber(a);
     }
-    printf("Variable %s = transpose( %s );\n",  rndstr,  a->name  );
+    fprintf(out, "Variable *%s = transpose( %s );\n",  rndstr,  a->name  );
     return newNode;
 }
 
@@ -267,7 +267,7 @@ Variable* processChoose(Variable *a,Variable *b,Variable *c,Variable *d){
     if(d->feature == NUM){
         d = generateScalarFromNumber(d);
     }
-    printf("Variable %s = choose( %s, %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
+    fprintf(out, "Variable *%s = choose( %s, %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
     return newNode;
 }
 
@@ -279,7 +279,7 @@ Variable* processSqrt(Variable *a){
     if(a->feature == NUM){
         a = generateScalarFromNumber(a);
     }
-    printf("Variable %s = sqrt( %s );\n",  rndstr,  a->name  );
+    fprintf(out, "Variable *%s = sqrt( %s );\n",  rndstr,  a->name  );
     return newNode;
 }
 
@@ -297,7 +297,7 @@ Variable* processGetDoubleIndex(Variable *a, Variable *b, Variable *c){
     if(c->feature == NUM){
         c = generateScalarFromNumber(c);
     }
-    printf("Variable %s = getDoubleIndex( %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name  );
+    fprintf(out, "Variable *%s = getDoubleIndex( %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name  );
     return newNode;
 }
 
