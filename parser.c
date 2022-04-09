@@ -337,7 +337,7 @@ int main(int argc, char *argv[]) {
                     giveError();
                 }
                 fprintf(out, "for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[2],expr1->name, tokenChars[2],expr2->name, tokenChars[2],expr3->name);
-                fprintf(out, "for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[4],expr4->name, tokenChars[4],expr5->name, tokenChars[5],expr6->name);
+                fprintf(out, "for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[4],expr4->name, tokenChars[4],expr5->name, tokenChars[4],expr6->name);
             } else {
                 raiseError();
             }

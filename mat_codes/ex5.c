@@ -13,7 +13,7 @@ Variable *AITGDPHCSPIjtHb = generateScalarFromNumber(1);
 Variable *sFyfvlADzPBfudk = generateScalarFromNumber(4);
 Variable *KlrwqAOzMiXrpif = generateScalarFromNumber(1);
 for(assign(i,NRTySFrzrmzlYGF); isLower(i,vEulQfpDBHlqDqr); increase(i,rCRwDnXeuOQqekl)){
-for(assign(j,AITGDPHCSPIjtHb); isLower(j,sFyfvlADzPBfudk); increase(in,KlrwqAOzMiXrpif)){
+for(assign(j,AITGDPHCSPIjtHb); isLower(j,sFyfvlADzPBfudk); increase(j,KlrwqAOzMiXrpif)){
 Variable *EffECLhbVFUkBye = getDoubleIndex( A, i, j );
 Variable *TxWJLkNgbqQmBxQ = generateScalarFromNumber(4);
 Variable *qfQOJWTwosILEeZ = substraction(EffECLhbVFUkBye, TxWJLkNgbqQmBxQ);
