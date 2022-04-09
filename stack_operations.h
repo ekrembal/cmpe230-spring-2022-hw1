@@ -360,7 +360,9 @@ Variable* evaluateList( struct List* list){
     if(stack->size != 1){
         raiseError();
     }
-    return top(stack);
+    Variable* topp = top(stack);
+    pop(stack);
+    return topp;
     // printf("last stack size: %d\n", stack->size);
 
 }
