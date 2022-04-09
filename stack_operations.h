@@ -102,6 +102,14 @@ struct List* createList(){
     return list;
 }
 
+void printList(struct List* list){
+    ListNode* temp = list->start;
+    while(temp != NULL){
+        printf("%s\n", temp->data->name);
+        temp = temp->next;
+    }
+}
+
 void addToList( struct List* list , struct Variable* var ){
     // printf("Adding this var: %s %d\n",var->name, var->feature);
     struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
@@ -181,10 +189,10 @@ char *randString() {
     return randomString;
 }
 
-void raiseError(){
-    printf("Error Occured\n");
-    exit(0);
-}
+// void raiseError(){
+//     printf("Error Occured\n");
+//     exit(0);
+// }
 
 Variable* generateScalarFromNumber(Variable *var){
     if(var->feature != NUM){
@@ -275,16 +283,33 @@ Variable* processSqrt(Variable *a){
     return newNode;
 }
 
+Variable* processGetDoubleIndex(Variable *a, Variable *b, Variable *c){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    newNode->feature= SCA;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    if(b->feature == NUM){
+        b = generateScalarFromNumber(b);
+    }
+    if(c->feature == NUM){
+        c = generateScalarFromNumber(c);
+    }
+    printf("Variable %s = getDoubleIndex( %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name  );
+    return newNode;
+}
 
 //TODO: NORMALLY RETURNS STRUCT VARIABLE BUT FOR NOW IT WILL BE VOID
 Variable* evaluateList( struct List* list){
-    printf("EVALUATIONA GIRDI\n");
+    // printf("EVALUATIONA GIRDI\n");
     struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
-    printf("A\n");
+    // printf("A\n");
     stack->top = NULL;
-    printf("B\n");
+    // printf("B\n");
     //stack->size = 0;
-    printf("STACK OLUSTURDU list size = %d\n",list->size);
+    // printf("STACK OLUSTURDU list size = %d\n",list->size);
 
     for(struct ListNode* ind = list->start; ind != NULL; ind=ind->next){
         Variable* var = ind->data;
@@ -353,14 +378,43 @@ Variable* evaluateList( struct List* list){
                 Variable* result = processSqrt(a);
                 push(stack, result);
             }
+            if(strcmp(var->name , "getSingleIndex")==0){
+                Variable* a = top(stack);
+                pop(stack);
+                Variable* b = top(stack);
+                pop(stack);
+                Variable* c = processVars(a, b, "getSingleIndex");
+                push(stack, c);
+            }
+            if(strcmp(var->name , "getDoubleIndex")==0){
+                Variable* a = top(stack);
+                pop(stack);
+                Variable* b = top(stack);
+                pop(stack);
+                Variable* c = top(stack);
+                pop(stack);
+                Variable* result = processGetDoubleIndex(a, c, b);
+                push(stack, result);
+            }
 
         }
 
     }
+    // printf("stack size = %d\n", stack->size);
+    // Print stack
+    
     if(stack->size != 1){
         raiseError();
     }
+    // while(stack->top != NULL){
+    //     Variable* var = top(stack);
+    //     pop(stack);
+    //     printf("%s %d\n",var->name, var->feature);
+    // }
     Variable* topp = top(stack);
+    if(topp->feature == NUM){
+        topp = generateScalarFromNumber(topp);
+    }
     pop(stack);
     return topp;
     // printf("last stack size: %d\n", stack->size);

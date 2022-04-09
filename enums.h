@@ -1,6 +1,10 @@
 #ifndef _enums_h
 #define _enums_h
 
+void raiseError(){
+    printf("Error!\n");
+    exit(1);
+}
 // enum VarType {
 //     TYPE_MATRIX,
 //     TYPE_VECTOR,

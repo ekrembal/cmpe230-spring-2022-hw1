@@ -5,6 +5,8 @@
 #include "stack.h"
 #include "string_operations.h"
 #include "parser_graph.h"
+#include "stack_operations.h"
+#include "expr.h"
 #define MAX_TOKENS 1024
 
 // enum line_types {
@@ -51,8 +53,6 @@
 //     LIST_OF_NUMBERS
 // };
 
-int FOR_LOOP_TOKENS[] = {FOR, LEFT_PARENTHESIS, IDENTIFIER, IN, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, RIGHT_PARENTHESIS, LEFT_BRACE, -1};
-int DOUBLE_FOR_LOOP_TOKENS[] = {FOR, LEFT_PARENTHESIS, IDENTIFIER, COMMA, IDENTIFIER, IN, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, COMMA, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, RIGHT_PARENTHESIS, LEFT_BRACE, -1};
 int CREATING_SCALAR_TOKENS[] = {SCALAR, IDENTIFIER, -1};
 int CREATING_VECTOR_TOKENS[] = {VECTOR, IDENTIFIER, LEFT_BRACKET, NUMBER, RIGHT_BRACKET, -1};
 int CREATING_MATRIX_TOKENS[] = {MATRIX, IDENTIFIER, LEFT_BRACKET, NUMBER, COMMA, NUMBER, RIGHT_BRACKET, -1};
@@ -80,14 +80,14 @@ void giveError(int errorLine){
 	exit(1);
 }
 
-int tokenLen(int *tokens){
-	for(int i = 0; i < MAX_TOKENS; i++){
-		if(tokens[i] == -1){
-			return i;
-		}
-	}
-	return MAX_TOKENS;
-}
+// int tokenLen(int *tokens){
+// 	for(int i = 0; i < MAX_TOKENS; i++){
+// 		if(tokens[i] == -1){
+// 			return i;
+// 		}
+// 	}
+// 	return MAX_TOKENS;
+// }
 
 void removeComments(char *str) {
 	int len = strlen(str);
@@ -142,6 +142,7 @@ int main(int argc, char *argv[]) {
 	char line[1024];
 	ParserGraph *graph = createParserGraph();
 	int lineCount = 0;
+    int forLoopType = 0;
 	while (fgets(line, sizeof(line), input_file) != NULL) {
 		lineCount++;
 		// Remove comments
@@ -156,7 +157,7 @@ int main(int argc, char *argv[]) {
 		
 		int len = tokenLen(tokens);
 		// for(int i = 0; i < len; i++){
-		// 	printf("OFFF %s %d\n",tokenChars[i], tokens[i]);
+		// 	printf("OFFF %s %s\n",tokenChars[i], enumToString(tokens[i]));
 		// 	if(tokens[i] == NUMBER){
 		// 		printf("%d\n",atoi(tokenChars[i]));
 		// 	}
@@ -178,27 +179,27 @@ int main(int argc, char *argv[]) {
 		if(tokens[0] == -1){
 			continue;
 		} else if(isArraysEqual(tokens, CREATING_SCALAR_TOKENS)){
-			printf("CREATING SCALAR\n");
+			// printf("CREATING SCALAR\n");
 			// TODO: Check if variable is already declared
 			// TODO: Check if numbers are not floating point
-			printf("scalar _%s = createScalar();\n", tokenChars[1]);
+			printf("Variable %s = createScalar();\n", tokenChars[1]);
 			// TODO: add this scalar to dictionary
 		} else if(isArraysEqual(tokens, CREATING_VECTOR_TOKENS)){
-			printf("CREATING VECTOR with len %d\n", atoi(tokenChars[3]));
+			// printf("CREATING VECTOR with len %d\n", atoi(tokenChars[3]));
 			// TODO: Check if variable is already declared
 			// TODO: Check if numbers are not floating point
-			printf("vector _%s = createVector(%d);\n", tokenChars[1], atoi(tokenChars[3]));
+			printf("Variable %s = createVector(%d);\n", tokenChars[1], atoi(tokenChars[3]));
 			// TODO: add this vector to dictionary
 		} else if(isArraysEqual(tokens, CREATING_MATRIX_TOKENS)){
-			printf("CREATING MATRIX with shape %d %d\n", atoi(tokenChars[3]), atoi(tokenChars[5]));
+			// printf("CREATING MATRIX with shape %d %d\n", atoi(tokenChars[3]), atoi(tokenChars[5]));
 			// TODO: Check if variable is already declared
 			// TODO: Check if numbers are not floating point
-			printf("matrix _%s = createMatrix(%d, %d);\n", tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
+			printf("Variable %s = createMatrix(%d, %d);\n", tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
 			// TODO: Add this matrix to dictionary
 		} else if(constantAssignment){
-			printf("CONSTANT ASSIGNMENT to the variable %s with %d numbers\n", tokenChars[0], constantAssignment);
+			// printf("CONSTANT ASSIGNMENT to the variable %s with %d numbers\n", tokenChars[0], constantAssignment);
 			// TODO: check if sizes match
-			printf("assignMultiple(_%s, ", tokenChars[0]);
+			printf("assignMultiple(&%s, ", tokenChars[0]);
 			for(int i = 0; i < constantAssignment; i++){
 				printf("%s", tokenChars[i + 3]);
 				if(i != constantAssignment - 1)
@@ -207,23 +208,160 @@ int main(int argc, char *argv[]) {
 			printf(");\n");
 		} else if(isArraysEqual(tokens, PRINTSEP_TOKENS)){
 			printf("printsep();\n");
-		} else if(isArraysEqual(tokens, EXPRESSION_ASSIGNMENT_TOKENS)){
-			printf("EXPRESSION ASSIGNMENT\n");
-			// TODO: esittirin sol tarafindakini tespit et.
-			// TODO: esittirin sag tarafindaki esitlikleri tespit et.
-			// TODO: stackteki degerleri kontrol edip koda cevir.
-		} else if(isArraysEqual(tokens, PRINT_TOKENS)){
-			printf("PRINT\n");
-		} else if(isArraysEqual(tokens, FOR_LOOP_TOKENS)){
-			printf("FOR LOOP\n");
-		} else if(isArraysEqual(tokens, DOUBLE_FOR_LOOP_TOKENS)){
-			printf("DOUBLE FOR LOOP\n");
-		} else if(isArraysEqual(tokens, FOR_LOOP_END_TOKENS)){
-			printf("FOR LOOP END\n");
-		} else {
-			printf("UNKNOWN\n");
+		} else if(tokens[0] == PRINT){
+            // printf("PRINTEE geldiii\n");
+            if(tokens[1] == LEFT_PARENTHESIS
+            && (tokens[2] == IDENTIFIER)
+            && (tokens[3] == RIGHT_PARENTHESIS)
+            ){
+                printf("print(&%s);\n", tokenChars[2]);
+            } else if(tokens[1] == LEFT_PARENTHESIS
+            && (tokens[2] == IDENTIFIER)
+            && (tokens[3] == LEFT_BRACKET)
+            && (tokens[4] == NUMBER)
+            && (tokens[5] == RIGHT_BRACKET)
+            && (tokens[6] == RIGHT_PARENTHESIS)
+            ){
+                printf("print(&%s[%s]);\n", tokenChars[2], tokenChars[4]);
+            } else if(tokens[1] == LEFT_PARENTHESIS
+            && (tokens[2] == IDENTIFIER)
+            && (tokens[3] == LEFT_BRACKET)
+            && (tokens[4] == NUMBER)
+            && (tokens[5] == COMMA)
+            && (tokens[6] == NUMBER)
+            && (tokens[7] == RIGHT_BRACKET)
+            && (tokens[8] == RIGHT_PARENTHESIS)
+            ){
+                printf("print(&%s[%s][%s]);\n", tokenChars[2], tokenChars[4], tokenChars[6]);
+            } else {
+                raiseError();
+            }
+        }
+// int FOR_LOOP_TOKENS[] = {FOR, LEFT_PARENTHESIS, IDENTIFIER, IN, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, RIGHT_PARENTHESIS, LEFT_BRACE, -1};
+// int DOUBLE_FOR_LOOP_TOKENS[] = {FOR, LEFT_PARENTHESIS, IDENTIFIER, COMMA, IDENTIFIER, IN, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, COMMA, EXPRESSION, TWO_DOTS, EXPRESSION, TWO_DOTS, EXPRESSION, RIGHT_PARENTHESIS, LEFT_BRACE, -1};
+
+        else if(tokens[0] == FOR){
+            int tempLeft;
+            if(tokens[1] == LEFT_PARENTHESIS
+            && (tokens[2] == IDENTIFIER)
+            && (tokens[3] == IN)
+            && (tempLeft = expr(4, len, false)) != -1
+            && (tokens[tempLeft] == TWO_DOTS)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == TWO_DOTS)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == RIGHT_PARENTHESIS)
+            && (tokens[tempLeft + 1] == LEFT_BRACE)
+            ){
+                tempLeft = parseExpression(4, len);
+                Variable* expr1 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr2 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr3 = evaluateList(&globalList);
+                forLoopType=1;
+                printf("for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[2],expr1->name, tokenChars[2],expr2->name, tokenChars[2],expr3->name);
+            } else if(tokens[1] == LEFT_PARENTHESIS
+            && (tokens[2] == IDENTIFIER)
+            && (tokens[3] == COMMA)
+            && (tokens[4] == IDENTIFIER)
+            && (tokens[5] == IN)
+            && (tempLeft = expr(6, len, false)) != -1
+            && (tokens[tempLeft] == TWO_DOTS)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == TWO_DOTS)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == COMMA)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == TWO_DOTS)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == TWO_DOTS)
+            && (tempLeft = expr(tempLeft + 1, len, false)) != -1
+            && (tokens[tempLeft] == RIGHT_PARENTHESIS)
+            && (tokens[tempLeft + 1] == LEFT_BRACE)
+            ){
+                tempLeft = parseExpression(6, len);
+                Variable* expr1 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr2 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr3 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr4 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr5 = evaluateList(&globalList);
+
+
+                tempLeft = parseExpression(tempLeft + 1, len);
+                Variable* expr6 = evaluateList(&globalList);
+                forLoopType=2;
+                printf("for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[2],expr1->name, tokenChars[2],expr2->name, tokenChars[2],expr3->name);
+                printf("for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[4],expr4->name, tokenChars[4],expr5->name, tokenChars[5],expr6->name);
+            } else {
+                raiseError();
+            }
+        }
+        else if(isArraysEqual(tokens, FOR_LOOP_END_TOKENS)){
+            if(forLoopType==1){
+                printf("}\n");
+            } else if(forLoopType==2){
+                printf("}}\n");
+            } else{
+                raiseError();
+            }
+            forLoopType=0;
+        }
+        
+        else{
+            if(len <= 0){
+                continue;
+            }
+            int tempLeft = 0;
+            if(tokens[0] == IDENTIFIER
+            && (tokens[1] == ASSIGNMENT)
+            && (tempLeft = expr(2, len - 1, false)) != -1
+            ){
+                tempLeft = parseExpression(2, len - 1);
+                Variable* expr1 = evaluateList(&globalList);
+                printf("%s = %s\n", tokenChars[0], expr1->name);
+            } else if(
+            tokens[0] == IDENTIFIER
+            && (tokens[1] == LEFT_BRACKET)
+            && (tokens[2] == NUMBER)
+            && (tokens[3] == RIGHT_BRACKET)
+            && (tokens[4] == ASSIGNMENT)
+            && (tempLeft = expr(5, len - 1, false)) != -1
+            ){
+                tempLeft = parseExpression(5, len - 1);
+                Variable* expr1 = evaluateList(&globalList);
+                printf("%s[%s] = %s\n", tokenChars[0], tokenChars[3], expr1->name);
+            } else if(
+            tokens[0] == IDENTIFIER
+            && (tokens[1] == LEFT_BRACKET)
+            && (tokens[2] == NUMBER)
+            && (tokens[3] == COMMA)
+            && (tokens[4] == NUMBER)
+            && (tokens[5] == RIGHT_BRACKET)
+            && (tokens[6] == ASSIGNMENT)
+            && (tempLeft = expr(7, len - 1, false)) != -1
+            ){
+                tempLeft = parseExpression(7, len - 1);
+                Variable* expr1 = evaluateList(&globalList);
+                printf("%s[%s][%s] = %s\n", tokenChars[0], tokenChars[3], tokenChars[5], expr1->name);
+            } else {
+                printf("Buradayken error veri expr assignment bulunamadi\n");
+                printf("%s %d\n", line, len);
+                raiseError();
+            }
+			// printf("UNKNOWN %d\n", len);
 		}
-		printf("%s\n", line);
+		// printf("%s\n", line);
 
 	}
 	// Close file

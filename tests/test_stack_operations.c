@@ -9,16 +9,23 @@
 int main(){
 
     ParserGraph *graph = createParserGraph();
-    tokenizeLine(graph, "choose(i,6,sqrt(x*y-5),choose(4,1, tr ( i ) , 0 )) + choose (4, 1, tr ( x*9 ) , 0 )");
+    // tokenizeLine(graph, "choose(i,6,sqrt(x*y-5),choose(4,1, tr ( i ) , 0 )) + choose (4, 1, tr ( x*9 ) , 0 )");
+
+
+    tokenizeLine(graph, "A[1, choose(i[2],(7)*((3)+5*2),4,5)]");
+    // tokenizeLine(graph, "(2+3)*4");
 
   
     // tokenizeLine(graph, "choose(1, 2, 3, 4)");
     // tokenizeLine(graph, "7 + 8*9");
-    int len = tokenLen(tokens);    
+    int len = tokenLen(tokens);
     for(int i = 0; i < len; i++){
         printf("%s %s\n",tokenChars[i], enumToString(tokens[i]));
     }
     int last = parseExpression(0, len - 1);
+    printf("PRINTING LIST\n");
+    printList(&globalList);
+    printf("PRINTING LIST\n");
 
     // for(int i = 0; i < len; i++){
     //     printf("%s %s\n",tokenChars[i], enumToString(tokens[i]));

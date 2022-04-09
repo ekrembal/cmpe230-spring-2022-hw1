@@ -1,0 +1,11 @@
+matrix A[4, 4]
+vector B[4]
+scalar c
+
+print(A)
+print(A[2, 1])
+printsep()
+print(B[1])
+print(c)
+
+for(i in 1:n:1) {
