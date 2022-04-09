@@ -3,46 +3,75 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "enums.h"
 
-enum type{OPERATION, NUMBER, VARIABLE};
 
 
-struct Variable {
+
+typedef struct Variable {
     char *name;
-    enum type feature;
-    struct Variable* next;
-    int variable_type;
+    int feature;
+    // int variable_type;
     int dim1,dim2;
 }Variable;
 
+typedef struct StackNode{
+    struct Variable* data;
+    struct StackNode* prev;
+}StackNode;
+
+typedef struct ListNode{
+    struct Variable* data;
+    struct ListNode* next;
+} ListNode;
+
 typedef struct Stack {
-    struct Variable* top;
+    struct StackNode* top;
     int size;
 } Stack;
 
 typedef struct List {
-    struct Variable* start;
-    struct Variable* end;
+    ListNode* start;
+    ListNode* end;
     int size;
 } List;
+List globalList;
 
-void push(struct Stack* stack, struct Variable data){
-    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
-    newNode->name = data.name;
-    newNode->feature = data.feature;
-    newNode->variable_type = data.variable_type;
-    newNode->dim1 = data.dim1;
-    newNode->dim2 = data.dim2;
-    newNode->next = stack->top->next;
+
+void push(struct Stack* stack, struct Variable* data){
+    struct StackNode* newNode = (struct StackNode*)malloc(sizeof(struct StackNode));
+    newNode->data = data;
+    newNode->prev = stack->top;
     stack->top = newNode;
     stack->size++;
+
+    // stack->top->next = newNode;
+    // stack->top = newNode;
+    // stack->size++;
+    return;
+    // newNode->next = stack->top;
+    // stack->top = newNode;
+    // printf("push %s\n", data->name);
+    // struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    // // newNode->name = data.name;
+    // // strcpy(newNode->name, data.name);
+    // // newNode->feature = data.feature;
+    // // newNode->variable_type = data.variable_type;
+    // newNode->dim1 = data.dim1;
+    // newNode->dim2 = data.dim2;
+    // newNode->next = NULL;
+    // stack->top->next = newNode;
+    // // stack->top = newNode;
+    // // stack->size++;
+    // printf("push %s\n", data->name);
 }
-struct Variable top(struct Stack* stack){
-    return *stack->top;
+struct Variable* top(struct Stack* stack){
+    return stack->top->data;
 }
 void pop(struct Stack* stack){
-    struct Variable* temp = stack->top;
-    stack->top = stack->top->next;
+    struct StackNode* temp = stack->top;
+    stack->top = stack->top->prev;
+    // stack->top = stack->top->next;
     free(temp);
     stack->size--;
 }
@@ -73,22 +102,68 @@ struct List* createList(){
     return list;
 }
 
-void addToList( struct List* list , struct Variable var ){
-    if(list->size==0){
-        list->start = &var;
-        list->end = &var;
-        list->size++;
+void addToList( struct List* list , struct Variable* var ){
+    // printf("Adding this var: %s %d\n",var->name, var->feature);
+    struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newNode->data = var;
+    newNode->next = NULL;
+    if(list->size == 0){
+        list->start = newNode;
+        list->end = newNode;
+        list->size = 1;
     }
     else{
-        list->end->next = &var;
-        list->end = &var;
+        list->end->next = newNode;
+        list->end = newNode;
         list->size++;
     }
+    return;
+    // if(list->size==0){
+    //     list->start = &var;
+    //     list->end = &var;
+    //     list->size++;
+    // }
+    // else{
+    //     list->end->next = &var;
+    //     list->end = &var;
+    //     list->size++;
+    // }
 }   
+
+
+void addOperationToList(const char *name){
+    Variable* newVar = (Variable*)malloc(sizeof(Variable));
+    newVar->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
+    strcpy(newVar->name,name);
+    newVar->feature = OP;
+    newVar->dim1 = -1;
+    newVar->dim2 = -1;
+    addToList(&globalList, newVar);
+}
+
+
+void addNumberToList(const char *name){
+    Variable* newVar = (Variable*)malloc(sizeof(Variable));
+    newVar->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
+    strcpy(newVar->name,name);
+    newVar->feature = NUM;
+    newVar->dim1 = 1;
+    newVar->dim2 = 1;
+    addToList(&globalList, newVar);
+}
+void addIdentifierToList(const char *name){
+    Variable* newVar = (Variable*)malloc(sizeof(Variable));
+    newVar->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
+    strcpy(newVar->name,name);
+    newVar->feature = SCA;
+    newVar->dim1 = 4;
+    newVar->dim2 = 4;
+    addToList(&globalList, newVar);
+}
 
 char *randString() {
     int length = 15;
-    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";        
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";        
     char *randomString = NULL;
 
     if (length) {
@@ -106,114 +181,187 @@ char *randString() {
     return randomString;
 }
 
+void raiseError(){
+    printf("Error Occured\n");
+    exit(0);
+}
+
+Variable* generateScalarFromNumber(Variable *var){
+    if(var->feature != NUM){
+        raiseError();
+    }
+    Variable *newVar = (Variable*)malloc(sizeof(Variable));
+    newVar->name = randString();
+    newVar->feature = SCA;
+    newVar->dim1 = 1;
+    newVar->dim2 = 1;
+    printf("Var %s = generateScalarFromNumber(%s);\n", newVar->name, var->name);
+    return newVar;
+}
+
+Variable* processVars(Variable* a, Variable* b, const char *op){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    // newNode->feature= VARIABLE;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    if(b->feature == NUM){
+        b = generateScalarFromNumber(b);
+    }
+    // if( (a.feature == NUM && b.feature == VARIABLE ) || (a.feature == VARIABLE && b.feature == NUM ) || a.feature == NUM && b.feature == NUM){
+    //     newNode->variable_type=3;
+    // }                
+    // else if(a.variable_type == b.variable_type){
+    //     newNode->variable_type=a.variable_type;
+    //     if(a.variable_type == 1 && a.dim1 == b. dim1  && a.dim2 == b. dim2){
+    //         newNode->dim1 = a.dim1;
+    //         newNode->dim1 = b.dim2;
+    //     }
+    //     if(a.variable_type == 2 && a.dim1 == b.dim1 ){
+    //         newNode->dim1 = a.dim1;
+    //     }
+    // }
+    // else{
+    //     printf("ERROR");
+    // }
+    printf("Variable %s = %s( %s , %s );\n",  rndstr,  op, a->name , b->name  );
+    return newNode;
+}
+
+Variable* processTr(Variable *a){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    newNode->feature= MAT;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    printf("Variable %s = transpose( %s );\n",  rndstr,  a->name  );
+    return newNode;
+}
+
+Variable* processChoose(Variable *a,Variable *b,Variable *c,Variable *d){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    newNode->feature= SCA;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    if(b->feature == NUM){
+        b = generateScalarFromNumber(b);
+    }
+    if(c->feature == NUM){
+        c = generateScalarFromNumber(c);
+    }
+    if(d->feature == NUM){
+        d = generateScalarFromNumber(d);
+    }
+    printf("Variable %s = choose( %s, %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
+    return newNode;
+}
+
+Variable* processSqrt(Variable *a){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    newNode->feature= MAT;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    printf("Variable %s = sqrt( %s );\n",  rndstr,  a->name  );
+    return newNode;
+}
+
+
 //TODO: NORMALLY RETURNS STRUCT VARIABLE BUT FOR NOW IT WILL BE VOID
-void evaluateList( struct List* list){
+Variable* evaluateList( struct List* list){
     printf("EVALUATIONA GIRDI\n");
     struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
     printf("A\n");
     stack->top = NULL;
     printf("B\n");
     //stack->size = 0;
-    printf("STACK OLUSTURDU");
-    while(list->size!=0){
+    printf("STACK OLUSTURDU list size = %d\n",list->size);
+
+    for(struct ListNode* ind = list->start; ind != NULL; ind=ind->next){
+        Variable* var = ind->data;
+    // for(int i = 0; i < 3; i++){
+
         
-        printf(" %s",list->start->name);
+        // printf("%s %d\n",var->name, var->feature);
+        
 
-        if(list->start->feature == NUMBER){
-            push(stack, *list->start);
-            list->start=list->start->next;
-            list->size--;
+        if(var->feature == NUM){
+            // printf("NUM in the list\n");
+            push(stack, var);
         }
-        if(list->start->feature == VARIABLE){
-            push(stack, *list->start);
-            list->start=list->start->next;
-            list->size--;
+        if(var->feature == MAT || var->feature == VEC || var->feature == SCA){
+            // printf("VARIABLE in the list\n");
+            push(stack, var);
         }
-        if(list->start->feature == OPERATION){
-            if(strcmp(list->start->name , "+")==0){
-                struct Variable a = top(stack);
+        if(var->feature == OP){
+            // printf("OP in the list\n");
+            if(strcmp(var->name , "+")==0){
+                Variable* a = top(stack);
                 pop(stack);
-                struct Variable b = top(stack);
+                Variable* b = top(stack);
                 pop(stack);
-                char *rndstr = randString();
-                struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
-                newNode->name=rndstr;
-                newNode->feature= VARIABLE;
-                if( (a.feature == NUMBER && b.feature == VARIABLE ) || (a.feature == VARIABLE && b.feature == NUMBER ) || a.feature == NUMBER && b.feature == NUMBER){
-                    newNode->variable_type=3;
-                }                
-                else if(a.variable_type == b.variable_type){
-                    newNode->variable_type=a.variable_type;
-                    if(a.variable_type == 1 && a.dim1 == b. dim1  && a.dim2 == b. dim2){
-                        newNode->dim1 = a.dim1;
-                        newNode->dim1 = b.dim2;
-                    }
-                    if(a.variable_type == 2 && a.dim1 == b.dim1 ){
-                        newNode->dim1 = a.dim1;
-                    }
-                }
-                else{
-                    printf("ERROR");
-                }
-                printf("Variable %s = addition( %s , %s );\n", rndstr , a.name , b.name  );
+                Variable* c = processVars(a,b, "addition");
+                push(stack, c);
+
             }
-            if(strcmp(list->start->name , "-")==0){
-                struct Variable a = top(stack);
+            if(strcmp(var->name , "-")==0){
+                Variable* a = top(stack);
                 pop(stack);
-                struct Variable b = top(stack);
+                Variable* b = top(stack);
                 pop(stack);
-                char *rndstr = randString();
-                //TODO: EXECUTE OPERATION ALSO IN HERE AND ASSIGN rndstr to a variable
-                printf("Variable %s = substraction ( %s , %s );\n", rndstr  , a.name , b.name  );
+                Variable* c = processVars(b, a, "substraction");
+                push(stack, c);
             }   
-            if(strcmp(list->start->name , "*")==0){
-                struct Variable a = top(stack);
+            if(strcmp(var->name , "*")==0){
+                Variable* a = top(stack);
                 pop(stack);
-                struct Variable b = top(stack);
+                Variable* b = top(stack);
                 pop(stack);
-                char *rndstr = randString();
-                //TODO: EXECUTE OPERATION ALSO IN HERE AND ASSIGN rndstr to a variable
-                printf("Variable %s = multiplication ( %s , %s );\n", rndstr  , a.name , b.name  );
+                Variable* c = processVars(a,b, "multiplication");
+                push(stack, c);
             }
-            if(strcmp(list->start->name , "/")==0){
-                struct Variable a = top(stack);
+            if(strcmp(var->name , "tr")==0){  
+                Variable* a = top(stack);
                 pop(stack);
-                struct Variable b = top(stack);
-                pop(stack);
-                char *rndstr = randString();
-                //TODO: EXECUTE OPERATION ALSO IN HERE AND ASSIGN rndstr to a variable
-                printf("Variable %s = division ( %s , %s );\n", rndstr , a.name , b.name  );
+                Variable* c = processTr(a);
+                push(stack, c);
             }
-            if(strcmp(list->start->name , "tr")==0){  
-                struct Variable a = top(stack);
+            if(strcmp(var->name , "choose")==0){
+                Variable* a = top(stack);
                 pop(stack);
-                char *rndstr = randString();
-                //TODO: EXECUTE OPERATION ALSO IN HERE AND ASSIGN rndstr to a variable
-                printf("Variable %s = transpose ( %s );\n", rndstr  , a.name );
+                Variable* b = top(stack);
+                pop(stack);
+                Variable* c = top(stack);
+                pop(stack);
+                Variable* d = top(stack);
+                pop(stack);
+                Variable* result = processChoose(a,b,c,d);
+                push(stack, result);
             }
-            if(strcmp(list->start->name , "choose")==0){
-                struct Variable a = top(stack);
+            if(strcmp(var->name , "sqrt")==0){
+                Variable* a = top(stack);
                 pop(stack);
-                struct Variable b = top(stack);
-                pop(stack);
-                struct Variable c = top(stack);
-                pop(stack);
-                struct Variable d = top(stack);
-                pop(stack);
-                char *rndstr = randString();
-                //TODO: EXECUTE OPERATION ALSO IN HERE AND ASSIGN rndstr to a variable
-                printf("Variable %s = choose ( %s , %s , %s , %s);\n", rndstr  , a.name , b.name , c.name , d.name);
-            }
-            if(strcmp(list->start->name , "sqrt")==0){
-                struct Variable a = top(stack);
-                pop(stack);
-                char *rndstr = randString();
-                //TODO: EXECUTE OPERATION ALSO IN HERE AND ASSIGN rndstr to a variable
-                printf("Variable %s = sqrt ( %s );\n", rndstr  , a.name );
+                Variable* result = processSqrt(a);
+                push(stack, result);
             }
 
         }
+        
     }
+    if(stack->size != 1){
+        raiseError();
+    }
+    return top(stack);
+    // printf("last stack size: %d\n", stack->size);
 
 }
 
@@ -226,7 +374,7 @@ choose CHOOSE
 ( LEFT_PARENTHESIS
 i IDENTIFIER
 , COMMA
-6 NUMBER
+6 NUM
 , COMMA
 sqrt SQRT
 ( LEFT_PARENTHESIS
@@ -234,38 +382,38 @@ x IDENTIFIER
 * MULTIPLICATION
 y IDENTIFIER
 - SUBTRACTION
-5 NUMBER
+5 NUM
 ) RIGHT_PARENTHESIS
 , COMMA
 choose CHOOSE
 ( LEFT_PARENTHESIS
-4 NUMBER
+4 NUM
 , COMMA
-1 NUMBER
+1 NUM
 , COMMA
 tr TR
 ( LEFT_PARENTHESIS
 i IDENTIFIER
 ) RIGHT_PARENTHESIS
 , COMMA
-0 NUMBER
+0 NUM
 ) RIGHT_PARENTHESIS
 ) RIGHT_PARENTHESIS
 + ADDITION
 choose CHOOSE
 ( LEFT_PARENTHESIS
-4 NUMBER
+4 NUM
 , COMMA
-1 NUMBER
+1 NUM
 , COMMA
 tr TR
 ( LEFT_PARENTHESIS
 x IDENTIFIER
 * MULTIPLICATION
-9 NUMBER
+9 NUM
 ) RIGHT_PARENTHESIS
 , COMMA
-0 NUMBER
+0 NUM
 ) RIGHT_PARENTHESIS
 i 6 x y * 5 - 4 1 i tr 0 Choose Choose 4 1 x 9 * tr 0 Choose +
 

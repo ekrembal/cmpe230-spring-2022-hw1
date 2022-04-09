@@ -10,6 +10,11 @@ int expr(int, int);
 int moreterms(int, int);
 int morefactors(int, int);
 
+int postTokens[1024];
+char postTokenChars[1024][1024];
+
+
+
 int factor(int left, int right){
     if(DEBUG){ printf("factor(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n"); }
     if(left > right)return -1;
@@ -27,6 +32,7 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_BRACKET
         )
         {
+            addOperationToList("getDoubleIndex");
             printf("getDoubleIndex ");
             return tempLeft + 1;
         }
@@ -38,6 +44,7 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_BRACKET
         )
         {
+            addOperationToList("getSingleIndex");
             printf("getSingleIndex ");
             return tempLeft + 1;
         }
@@ -49,6 +56,7 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_PARENTHESIS
         )
         {
+            addOperationToList("sqrt");
             printf("SQRT ");
             return tempLeft + 1;
         }
@@ -80,16 +88,19 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_PARENTHESIS
         )
         {
+            addOperationToList("choose");
             printf("Choose ");
             return tempLeft + 1;
         }
     tempLeft = 0;
     if(tokens[left] == IDENTIFIER){
+        addIdentifierToList(tokenChars[left]);
         printf("%s ",tokenChars[left]);
         return left + 1;
     }
     tempLeft = 0;
     if(tokens[left] == NUMBER){
+        addNumberToList(tokenChars[left]);
         printf("%s ", tokenChars[left]);
         return left + 1;
     }
@@ -101,6 +112,7 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_PARENTHESIS
         )
         {
+            addOperationToList("tr");
             printf("tr ");
             return tempLeft + 1;
         }
@@ -113,6 +125,7 @@ int moreterms(int left, int right){
     // if(DEBUG) printf("moreterms(%d, %d)\n", left, right);
     int tempLeft;
 	if( ((tokens[left] == ADDITION) || (tokens[left] == SUBTRACTION)) && ((tempLeft = term(left + 1, right)) != -1) && ((tempLeft = moreterms(tempLeft, right)) != -1)){
+        addOperationToList(tokenChars[left]);
         printf("%s ", tokenChars[left]);
         // exit(0);
 		return tempLeft;
@@ -128,6 +141,7 @@ int morefactors(int left, int right){
         return left;
         // exit(0);
 	if(tokens[left] == MULTIPLICATION && ((tempLeft = factor(left + 1, right)) != -1) && ((tempLeft = morefactors(tempLeft, right)) != -1)){
+        addOperationToList("*");
         printf("* ");
         // printf("%s ",enumToString(tokens[left]));
         // printf("GELDIIIIIIII %d %d %d\n",left,right, tempLeft);
@@ -163,4 +177,8 @@ int expr(int left, int right){
     return -1;
 }
 
+// int parseExpression(int left, int right){
+//     if(DEBUG){ printf("parseExpression(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n"); }
+//     return expr(int left, int right);
+// }
 #endif

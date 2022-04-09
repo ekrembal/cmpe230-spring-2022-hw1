@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "../expr.h"
+#include "../expr_to_var.h"
 
-//i 6 x y * 5 - 4 1 i tr 0 Choose Choose 4 1 x 9 * tr 0 Choose +
-//i 6 x y * 5 - SQRT 4 1 i tr 0 Choose Choose 4 1 x 9 * tr 0 Choose +
 int main(){
     ParserGraph *graph = createParserGraph();
     tokenizeLine(graph, "choose(i,6,sqrt(x*y-5),choose(4,1, tr ( i ) , 0 )) + choose (4, 1, tr ( x*9 ) , 0 )");

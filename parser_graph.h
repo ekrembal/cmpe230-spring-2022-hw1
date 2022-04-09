@@ -4,40 +4,22 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include "enums.h"
 #define MAX_CHAR_GRAPH_SIZE 256
 
-// Enum for all token types
-enum token_type {
-    START,
-    IDENTIFIER, // <Identifier> starts with alpha or underscore and can contain numbers and underscores
-    NUMBER, // <Number> starts with digit
-    ASSIGNMENT, // =
-    ADDITION, // +
-    SUBTRACTION, // -
-    MULTIPLICATION, // *
-    LEFT_PARENTHESIS, // (
-    RIGHT_PARENTHESIS, // )
-    LEFT_BRACKET, // [
-    RIGHT_BRACKET, // ]
-    LEFT_BRACE, // {
-    RIGHT_BRACE, // }
-    COMMA, // ,
-    FOR, // for
-    PRINT, // print
-    PRINTSEP, // printsep
-    SCALAR, // scalar
-    VECTOR, // vector
-    MATRIX, // matrix
-    UNKNOWN, // Unknown token
-    IN, // in
-    TWO_DOTS, // :
-    END_OF_FILE, // EOF
-    SQRT, // sqrt
-    CHOOSE, // choose
-    TR, // tr
-    EXPRESSION,
-    LIST_OF_NUMBERS
-};
+int tokens[1024];
+char tokenChars[1024][1024];
+
+int tokenLen(int *tokens){
+	for(int i = 0; i < 1024; i++){
+		if(tokens[i] == -1){
+			return i;
+		}
+	}
+	return 1024;
+}
+
+
 
 char *enumToString(int type){
     switch(type){
