@@ -19,5 +19,5 @@ Variable *fXudZHiftaKCZVH = generateScalarFromNumber(1);
 Variable *YSSYoQcJomwUFBd = getDoubleIndex( A, fXudZHiftaKCZVH, EffECLhbVFUkBye );
 assignToDoubleIndex(PRINTMATRIX, ,, ], YSSYoQcJomwUFBd);
 print(PRINTMATRIX);
-print(getDoubleIndex(PRINTMATRIX, 1, 1));
-print(getDoubleIndex(PRINTMATRIX, 2, 2));
+print(getDoubleIndexInt(PRINTMATRIX, 1, 1));
+print(getDoubleIndexInt(PRINTMATRIX, 2, 2));

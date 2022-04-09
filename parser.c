@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
                     printf("Error in line %d: Variable %s is not a vector\n", lineCount, tokenChars[2]);
                     giveError();
                 }
-                fprintf(out, "print(getSingleIndex(%s, %s));\n", tokenChars[2], tokenChars[4]);
+                fprintf(out, "print(getSingleIndexInt(%s, %s));\n", tokenChars[2], tokenChars[4]);
             } else if(tokens[1] == LEFT_PARENTHESIS
             && (tokens[2] == IDENTIFIER)
             && (tokens[3] == LEFT_BRACKET)
@@ -243,7 +243,7 @@ int main(int argc, char *argv[]) {
                     giveError();
                 }
                 // TODO check if the indices are correct
-                fprintf(out, "print(getDoubleIndex(%s, %s, %s));\n", tokenChars[2], tokenChars[4], tokenChars[6]);
+                fprintf(out, "print(getDoubleIndexInt(%s, %s, %s));\n", tokenChars[2], tokenChars[4], tokenChars[6]);
             } else {
                 raiseError();
             }

@@ -20,7 +20,7 @@ assign(T, EffECLhbVFUkBye);
 Variable *TxWJLkNgbqQmBxQ = generateScalarFromNumber(1);
 Variable *CQptkhHqrQdwfcA = generateScalarFromNumber(1);
 Variable *qfQOJWTwosILEeZ = getDoubleIndex( T, TxWJLkNgbqQmBxQ, CQptkhHqrQdwfcA );
-Variable *YSSYoQcJomwUFBd = sqrt( qfQOJWTwosILEeZ );
+Variable *YSSYoQcJomwUFBd = squareroot( qfQOJWTwosILEeZ );
 assign(r, YSSYoQcJomwUFBd);
 print(r);
 assign(x, y);
