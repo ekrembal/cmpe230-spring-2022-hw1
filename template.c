@@ -6,6 +6,7 @@
 
 #define N 1000000
 #define M 1000
+#define EPS 0.00001
 // VEC / SCA / MAT/ NUM/ OP
 typedef struct Variable {
     char *name;
@@ -154,8 +155,11 @@ struct Variable * transpose( struct Variable * a){
     }
     return newNode;
 }
+double mut(double x){
+    return (x < 0)?-x:x;
+}
 struct Variable * choose( struct Variable * expr1, struct Variable * expr2, struct Variable * expr3, struct Variable * expr4 ){
-    if( expr1->val[0][0] == 0 ){
+    if( mut(expr1->val[0][0] - 0) < EPS ){
         return expr2;
     }
     else if( expr1->val[0][0] > 0){
@@ -169,20 +173,29 @@ struct Variable * choose( struct Variable * expr1, struct Variable * expr2, stru
 void print( struct Variable * a){
     for( int i = 0 ; i < a->dim1 ; i++ ){
         for( int  j = 0 ; j < a->dim2 ; j++ ){
-            printf("%lf ",a->val[i][j]);
+            if((a->val[i][j] - (int)a->val[i][j])<EPS){
+                printf("%d ",(int)a->val[i][j]);
+            }
+            else{
+                printf("%lf ",a->val[i][j]);
+            }
         }
         printf("\n");
     }
+}
+void printsep(){
+    printf("----------\n");
 }
 bool isLower(struct Variable * a, struct Variable * b){
     return (a->val[0][0] <= b->val[0][0]);
 }
 void increase( struct Variable * a, struct Variable * b){
-    a->val[0][0]+= b->val[0][0];
+    a->val[0][0] += b->val[0][0];
     return;
 }
 
-struct Variable * getSingleIndex(struct Variable * a , int index ){
+struct Variable * getSingleIndexInt(struct Variable * a , int index ){
+        index--;
         struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
         int row = index / a->dim2;
         int column = index % a->dim2;
@@ -190,6 +203,34 @@ struct Variable * getSingleIndex(struct Variable * a , int index ){
         newNode->dim2=1;
         newNode->feature=SCA;
         newNode->val[0][0]=a->val[row][column];
+        return newNode;
+}
+struct Variable * getSingleIndex(struct Variable * a , struct Variable * index ){
+        index->val[0][0]--;
+        struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+        int row = (int)index->val[0][0] / a->dim2;
+        int column = (int)index->val[0][0] % a->dim2;
+        newNode->dim1=1;
+        newNode->dim2=1;
+        newNode->feature=SCA;
+        newNode->val[0][0]=a->val[row][column];
+        return newNode;
+}
+
+struct Variable * getDoubleIndexInt(struct Variable * a , int x, int y ){
+        struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+        newNode->dim1=1;
+        newNode->dim2=1;
+        newNode->feature=SCA;
+        newNode->val[0][0]=a->val[x - 1][y - 1];
+        return newNode;
+}
+struct Variable * getDoubleIndex(struct Variable * a , struct Variable * x, struct Variable * y ){
+        struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+        newNode->dim1=1;
+        newNode->dim2=1;
+        newNode->feature=SCA;
+        newNode->val[0][0]=a->val[(int)x->val[0][0] - 1][(int)y->val[0][0] - 1];
         return newNode;
 }
 void assign(struct Variable * a, struct Variable * b ){
@@ -205,13 +246,19 @@ void assign(struct Variable * a, struct Variable * b ){
     return;
 }
 void assignToFlatten(struct Variable * a , double var , int index ){
-        int row = index / a->dim2;
-        int column = index % a->dim2;
-        printf("%d\n",row);
-        printf("%d\n",column);
-
-        a->val[row][column] = var ;
-        return;
+    int row = index / a->dim2;
+    int column = index % a->dim2;
+        
+    a->val[row][column] = var ;
+    return;
+}
+void assignToIndex(struct Variable * a, struct Variable * var , struct Variable *index ){
+    a->val[index->val[0][0]][0] = var->val[0][0];
+    return;
+}
+void assignToDoubleIndex(struct Variable * a, struct Variable * var , struct Variable *index1, struct Variable *index2){
+    a->val[index1->val[0][0]][index2->val[0][0]] = var->val[0][0];
+    return;
 }
 //double* getDoublePointer(struct Variable a, int index){
 //    if(a.dim1==1 && a.dim2==1){
@@ -357,27 +404,39 @@ int main(){
     ans = multiplication(m1,m2);
     print(ans);
     */
+
+
+
+
+
+Variable *A = createMatrix(4, 4);
+Variable *count = createScalar();
+Variable *incr = createScalar();
 Variable *i = createScalar();
-Variable *n = createScalar();
-Variable *x = createVector(2);
-Variable *y = createVector(2);
-Variable *A = createMatrix(2, 2);
-Variable *B = createMatrix(2, 2);
-Variable *lrfkQyuQFjKXyQV = generateScalarFromNumber(10);
-assign(n, lrfkQyuQFjKXyQV);
-assignToFlatten(x, 1, 0);assignToFlatten(x, 1, 1);
-assignToFlatten(A, 1, 0);assignToFlatten(A, 1, 1);assignToFlatten(A, 1, 2);assignToFlatten(A, 0, 3);
-assignToFlatten(B, 1, 0);assignToFlatten(B, 0, 1);assignToFlatten(B, 0, 2);assignToFlatten(B, 1, 3);
-print(x);
+Variable *j = createScalar();
+assignToFlatten(A, 0, 0);assignToFlatten(A, 1, 1);assignToFlatten(A, 2, 2);assignToFlatten(A, 3, 3);assignToFlatten(A, 4, 4);assignToFlatten(A, 5, 5);assignToFlatten(A, 6, 6);assignToFlatten(A, 7, 7);assignToFlatten(A, 8, 8);assignToFlatten(A, 9, 9);assignToFlatten(A, 1, 10);assignToFlatten(A, 1, 11);assignToFlatten(A, 1, 12);assignToFlatten(A, 2, 13);assignToFlatten(A, 3, 14);assignToFlatten(A, 4, 15);
+Variable *lrfkQyuQFjKXyQV = generateScalarFromNumber(0);
+assign(count, lrfkQyuQFjKXyQV);
 Variable *NRTySFrzrmzlYGF = generateScalarFromNumber(1);
-Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(1);
-for(assign(i,NRTySFrzrmzlYGF); isLower(i,n); increase(i,vEulQfpDBHlqDqr)){
-Variable *rCRwDnXeuOQqekl = multiplication(A, B);
-assign(B, rCRwDnXeuOQqekl);
-Variable *AITGDPHCSPIjtHb = multiplication(B, x);
-assign(y, AITGDPHCSPIjtHb);
-print(getSingleIndex(y, 1));
-}
+Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(4);
+Variable *rCRwDnXeuOQqekl = generateScalarFromNumber(1);
+Variable *AITGDPHCSPIjtHb = generateScalarFromNumber(1);
+Variable *sFyfvlADzPBfudk = generateScalarFromNumber(4);
+Variable *KlrwqAOzMiXrpif = generateScalarFromNumber(1);
+for(assign(i,NRTySFrzrmzlYGF); isLower(i,vEulQfpDBHlqDqr); increase(i,rCRwDnXeuOQqekl)){
+for(assign(j,AITGDPHCSPIjtHb); isLower(j,sFyfvlADzPBfudk); increase(j,KlrwqAOzMiXrpif)){
+Variable *EffECLhbVFUkBye = getDoubleIndex( A, i, j );
+Variable *TxWJLkNgbqQmBxQ = generateScalarFromNumber(4);
+Variable *qfQOJWTwosILEeZ = substraction(EffECLhbVFUkBye, TxWJLkNgbqQmBxQ);
+Variable *YSSYoQcJomwUFBd = generateScalarFromNumber(1);
+Variable *fXudZHiftaKCZVH = generateScalarFromNumber(1);
+Variable *sYBlOetsWCRFHPX = generateScalarFromNumber(0);
+Variable *CQptkhHqrQdwfcA = choose( qfQOJWTwosILEeZ, YSSYoQcJomwUFBd, fXudZHiftaKCZVH, sYBlOetsWCRFHPX );
+assign(incr, CQptkhHqrQdwfcA);
+Variable *PRbsshSjXDFileB = addition(incr, count);
+assign(count, PRbsshSjXDFileB);
+}}
+print(count);
 
     
 
