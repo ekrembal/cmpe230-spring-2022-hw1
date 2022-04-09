@@ -544,7 +544,7 @@ Variable* evaluateList( struct List* list){
                 pop(stack);
                 Variable* d = top(stack);
                 pop(stack);
-                Variable* result = processChoose(a,b,c,d);
+                Variable* result = processChoose(d, c, b, a);
                 push(stack, result);
             }
             if(strcmp(var->name , "sqrt")==0){

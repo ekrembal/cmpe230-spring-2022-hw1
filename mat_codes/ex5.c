@@ -17,10 +17,10 @@ for(assign(j,AITGDPHCSPIjtHb); isLower(j,sFyfvlADzPBfudk); increase(j,KlrwqAOzMi
 Variable *EffECLhbVFUkBye = getDoubleIndex( A, i, j );
 Variable *TxWJLkNgbqQmBxQ = generateScalarFromNumber(4);
 Variable *qfQOJWTwosILEeZ = substraction(EffECLhbVFUkBye, TxWJLkNgbqQmBxQ);
-Variable *YSSYoQcJomwUFBd = generateScalarFromNumber(0);
+Variable *YSSYoQcJomwUFBd = generateScalarFromNumber(1);
 Variable *fXudZHiftaKCZVH = generateScalarFromNumber(1);
-Variable *sYBlOetsWCRFHPX = generateScalarFromNumber(1);
-Variable *CQptkhHqrQdwfcA = choose( YSSYoQcJomwUFBd, fXudZHiftaKCZVH, sYBlOetsWCRFHPX, qfQOJWTwosILEeZ );
+Variable *sYBlOetsWCRFHPX = generateScalarFromNumber(0);
+Variable *CQptkhHqrQdwfcA = choose( qfQOJWTwosILEeZ, YSSYoQcJomwUFBd, fXudZHiftaKCZVH, sYBlOetsWCRFHPX );
 assign(incr, CQptkhHqrQdwfcA);
 Variable *PRbsshSjXDFileB = addition(incr, count);
 assign(count, PRbsshSjXDFileB);
