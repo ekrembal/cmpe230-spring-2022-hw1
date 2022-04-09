@@ -418,7 +418,7 @@ Variable* processSqrt(Variable *a){
     newNode->dim1 = 1;
     newNode->dim2 = 1;
 
-    fprintf(out, "Variable *%s = sqrt( %s );\n",  rndstr,  a->name  );
+    fprintf(out, "Variable *%s = squareroot( %s );\n",  rndstr,  a->name  );
     addNewScalar(newNode->name);
     return newNode;
 }
