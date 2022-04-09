@@ -3,7 +3,8 @@
         "stdlib.h": "c",
         "stdio.h": "c",
         "dictionary.h": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "typeinfo": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
