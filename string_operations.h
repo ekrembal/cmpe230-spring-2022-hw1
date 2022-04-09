@@ -226,67 +226,67 @@ int findExpressionLength(char *str){
 }
 
 
-char *parseExpression(char *str){
-    //This function recursively parses expression from * + -
-    //It returns the result of the expression
-    char *result = (char*)malloc(sizeof(char) * findExpressionLength(str));
-    stringPair expressionPair = split(str, '*');
-    if(expressionPair.first != NULL){
-        strcpy(result, "multiply(");
-        strcat(result, parseExpression(expressionPair.first));
-        strcat(result, ",");
-        strcat(result, parseExpression(expressionPair.second));
-        strcat(result, ")");
-        return result;
-    }
-    expressionPair = split(str, '+');
-    if(expressionPair.first != NULL){
-        strcpy(result, "add(");
-        strcat(result, parseExpression(expressionPair.first));
-        strcat(result, ",");
-        strcat(result, parseExpression(expressionPair.second));
-        strcat(result, ")");
-        return result;
-    }
-    expressionPair = split(str, '-');
-    if(expressionPair.first != NULL){
-        strcpy(result, "subtract(");
-        strcat(result, parseExpression(expressionPair.first));
-        strcat(result, ",");
-        strcat(result, parseExpression(expressionPair.second));
-        strcat(result, ")");
-        return result;
-    }
-    strcpy(result, parseGetIndex(str));
-    return result;
-}
+// char *parseExpression(char *str){
+//     //This function recursively parses expression from * + -
+//     //It returns the result of the expression
+//     char *result = (char*)malloc(sizeof(char) * findExpressionLength(str));
+//     stringPair expressionPair = split(str, '*');
+//     if(expressionPair.first != NULL){
+//         strcpy(result, "multiply(");
+//         strcat(result, parseExpression(expressionPair.first));
+//         strcat(result, ",");
+//         strcat(result, parseExpression(expressionPair.second));
+//         strcat(result, ")");
+//         return result;
+//     }
+//     expressionPair = split(str, '+');
+//     if(expressionPair.first != NULL){
+//         strcpy(result, "add(");
+//         strcat(result, parseExpression(expressionPair.first));
+//         strcat(result, ",");
+//         strcat(result, parseExpression(expressionPair.second));
+//         strcat(result, ")");
+//         return result;
+//     }
+//     expressionPair = split(str, '-');
+//     if(expressionPair.first != NULL){
+//         strcpy(result, "subtract(");
+//         strcat(result, parseExpression(expressionPair.first));
+//         strcat(result, ",");
+//         strcat(result, parseExpression(expressionPair.second));
+//         strcat(result, ")");
+//         return result;
+//     }
+//     strcpy(result, parseGetIndex(str));
+//     return result;
+// }
 
 
 
-char *parseAssignment(char *str) {
-    stringPair result = split(str, '=');
-    char * resultt = (char*)malloc(sizeof(char) * (strlen("assign(") + strlen(result.first) + strlen(",") + findExpressionLength(result.second) + strlen(");")));
-    strcpy(resultt, "assign(");
-    strcat(resultt, result.first);
-    strcat(resultt, ",");
-    strcat(resultt, parseExpression(result.second));
-    strcat(resultt, ");");
-    return resultt;
-}
+// char *parseAssignment(char *str) {
+//     stringPair result = split(str, '=');
+//     char * resultt = (char*)malloc(sizeof(char) * (strlen("assign(") + strlen(result.first) + strlen(",") + findExpressionLength(result.second) + strlen(");")));
+//     strcpy(resultt, "assign(");
+//     strcat(resultt, result.first);
+//     strcat(resultt, ",");
+//     strcat(resultt, parseExpression(result.second));
+//     strcat(resultt, ");");
+//     return resultt;
+// }
 
-char* removeMultipleSpaces(char* str){
-    char res[10000000];
-    int i=0,j=0;
-    while (str[i] != '\0'){
-        if((str[i] == ' ' && str[i+1] == ' ') != 1) {
-        res[j] = str[i];
-        j++;
-        }
-        i++;
-    }
-    res[j] = '\0';
-    return res;
-}
+// char* removeMultipleSpaces(char* str){
+//     char res[10000000];
+//     int i=0,j=0;
+//     while (str[i] != '\0'){
+//         if((str[i] == ' ' && str[i+1] == ' ') != 1) {
+//         res[j] = str[i];
+//         j++;
+//         }
+//         i++;
+//     }
+//     res[j] = '\0';
+//     return res;
+// }
 
 
 

@@ -10,3 +10,4 @@
 - default values are 0 for all variables
 - For simplicity, you can assume you will have constant numbers in the  curly brackets of  vector/matrix initializers. 
 - y[1] = 3 is valid
+- For bitti mi diye bak
