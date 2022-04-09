@@ -49,6 +49,7 @@ int factor(int left, int right){
         tokens[tempLeft] == RIGHT_PARENTHESIS
         )
         {
+            printf("SQRT ");
             return tempLeft + 1;
         }
     tempLeft = 0;
