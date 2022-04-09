@@ -5,7 +5,8 @@
 #define MAX_CHAR_GRAPH_SIZE 256
 
 #include "enums.h"
-// #include "utils.h"
+
+
 FILE *out;
 int lastNodeId = 0;
 typedef struct ParserNode {

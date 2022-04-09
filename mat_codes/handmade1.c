@@ -17,7 +17,7 @@ Variable *CQptkhHqrQdwfcA = generateScalarFromNumber(3);
 Variable *EffECLhbVFUkBye = choose( sFyfvlADzPBfudk, qfQOJWTwosILEeZ, TxWJLkNgbqQmBxQ, CQptkhHqrQdwfcA );
 Variable *fXudZHiftaKCZVH = generateScalarFromNumber(1);
 Variable *YSSYoQcJomwUFBd = getDoubleIndex( A, fXudZHiftaKCZVH, EffECLhbVFUkBye );
-assignToDoubleIndex(PRINTMATRIX, ,, ], YSSYoQcJomwUFBd);
+assignToDoubleIndex(PRINTMATRIX, 2, 2, YSSYoQcJomwUFBd);
 print(PRINTMATRIX);
 print(getDoubleIndexInt(PRINTMATRIX, 1, 1));
 print(getDoubleIndexInt(PRINTMATRIX, 2, 2));

@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
-// #include "stack.h"
 #include "enums.h"
 #include "globals.h"
 #include "utils.h"
@@ -364,7 +362,7 @@ int main(int argc, char *argv[]) {
                     printf("Error in line %d: Expression in single assingment is not a scalar\n", lineCount);
                     giveError();
                 }
-                fprintf(out, "assignToDoubleIndex(%s, %s, %s, %s);\n", tokenChars[0], tokenChars[3], tokenChars[5], expr1->name);
+                fprintf(out, "assignToDoubleIndex(%s, %s, %s, %s);\n", tokenChars[0], tokenChars[2], tokenChars[4], expr1->name);
             } else {
                 printf("Buradayken error veri expr assignment bulunamadi\n");
                 printf("%s %d\n", line, len);

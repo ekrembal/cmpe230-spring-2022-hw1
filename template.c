@@ -252,12 +252,12 @@ void assignToFlatten(struct Variable * a , double var , int index ){
     a->val[row][column] = var ;
     return;
 }
-void assignToIndex(struct Variable * a, struct Variable * var , int index ){
-    a->val[index][0] = var->val[0][0];
+void assignToIndex(struct Variable * a, int index, struct Variable * var  ){
+    a->val[index - 1][0] = var->val[0][0];
     return;
 }
-void assignToDoubleIndex(struct Variable * a, struct Variable * var , int index1, int index2){
-    a->val[index1][index2] = var->val[0][0];
+void assignToDoubleIndex(struct Variable * a, int index1, int index2, struct Variable * var ){
+    a->val[index1 - 1][index2 - 1] = var->val[0][0];
     return;
 }
 //double* getDoublePointer(struct Variable a, int index){
@@ -407,36 +407,48 @@ int main(){
 
 
 
-
-
-Variable *A = createMatrix(4, 4);
-Variable *count = createScalar();
-Variable *incr = createScalar();
-Variable *i = createScalar();
-Variable *j = createScalar();
-assignToFlatten(A, 0, 0);assignToFlatten(A, 1, 1);assignToFlatten(A, 2, 2);assignToFlatten(A, 3, 3);assignToFlatten(A, 4, 4);assignToFlatten(A, 5, 5);assignToFlatten(A, 6, 6);assignToFlatten(A, 7, 7);assignToFlatten(A, 8, 8);assignToFlatten(A, 9, 9);assignToFlatten(A, 1, 10);assignToFlatten(A, 1, 11);assignToFlatten(A, 1, 12);assignToFlatten(A, 2, 13);assignToFlatten(A, 3, 14);assignToFlatten(A, 4, 15);
-Variable *lrfkQyuQFjKXyQV = generateScalarFromNumber(0);
-assign(count, lrfkQyuQFjKXyQV);
-Variable *NRTySFrzrmzlYGF = generateScalarFromNumber(1);
-Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(4);
-Variable *rCRwDnXeuOQqekl = generateScalarFromNumber(1);
+Variable *A = createMatrix(2, 2);
+Variable *InvA = createMatrix(2, 2);
+Variable *detA = createScalar();
+Variable *minusOne = createScalar();
+Variable *NRTySFrzrmzlYGF = generateScalarFromNumber(2);
+Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(1);
+Variable *lrfkQyuQFjKXyQV = substraction(NRTySFrzrmzlYGF, vEulQfpDBHlqDqr);
+assign(minusOne, lrfkQyuQFjKXyQV);
+assignToFlatten(A, 1, 0);assignToFlatten(A, 2, 1);assignToFlatten(A, 3, 2);assignToFlatten(A, 5, 3);
+Variable *a = createScalar();
+Variable *b = createScalar();
+Variable *c = createScalar();
+Variable *d = createScalar();
 Variable *AITGDPHCSPIjtHb = generateScalarFromNumber(1);
-Variable *sFyfvlADzPBfudk = generateScalarFromNumber(4);
-Variable *KlrwqAOzMiXrpif = generateScalarFromNumber(1);
-for(assign(i,NRTySFrzrmzlYGF); isLower(i,vEulQfpDBHlqDqr); increase(i,rCRwDnXeuOQqekl)){
-for(assign(j,AITGDPHCSPIjtHb); isLower(j,sFyfvlADzPBfudk); increase(j,KlrwqAOzMiXrpif)){
-Variable *EffECLhbVFUkBye = getDoubleIndex( A, i, j );
-Variable *TxWJLkNgbqQmBxQ = generateScalarFromNumber(4);
-Variable *qfQOJWTwosILEeZ = substraction(EffECLhbVFUkBye, TxWJLkNgbqQmBxQ);
+Variable *sFyfvlADzPBfudk = generateScalarFromNumber(1);
+Variable *rCRwDnXeuOQqekl = getDoubleIndex( A, AITGDPHCSPIjtHb, sFyfvlADzPBfudk );
+assign(a, rCRwDnXeuOQqekl);
+Variable *EffECLhbVFUkBye = generateScalarFromNumber(1);
+Variable *qfQOJWTwosILEeZ = generateScalarFromNumber(2);
+Variable *KlrwqAOzMiXrpif = getDoubleIndex( A, EffECLhbVFUkBye, qfQOJWTwosILEeZ );
+assign(b, KlrwqAOzMiXrpif);
+Variable *CQptkhHqrQdwfcA = generateScalarFromNumber(2);
 Variable *YSSYoQcJomwUFBd = generateScalarFromNumber(1);
-Variable *fXudZHiftaKCZVH = generateScalarFromNumber(1);
-Variable *sYBlOetsWCRFHPX = generateScalarFromNumber(0);
-Variable *CQptkhHqrQdwfcA = choose( qfQOJWTwosILEeZ, YSSYoQcJomwUFBd, fXudZHiftaKCZVH, sYBlOetsWCRFHPX );
-assign(incr, CQptkhHqrQdwfcA);
-Variable *PRbsshSjXDFileB = addition(incr, count);
-assign(count, PRbsshSjXDFileB);
-}}
-print(count);
+Variable *TxWJLkNgbqQmBxQ = getDoubleIndex( A, CQptkhHqrQdwfcA, YSSYoQcJomwUFBd );
+assign(c, TxWJLkNgbqQmBxQ);
+Variable *sYBlOetsWCRFHPX = generateScalarFromNumber(2);
+Variable *PRbsshSjXDFileB = generateScalarFromNumber(2);
+Variable *fXudZHiftaKCZVH = getDoubleIndex( A, sYBlOetsWCRFHPX, PRbsshSjXDFileB );
+assign(d, fXudZHiftaKCZVH);
+Variable *xwBCTOaYaxzFBjb = multiplication(a, d);
+Variable *KRxIRImqPZWMSHl = multiplication(b, c);
+Variable *PJhtAZhbuXhwaDL = substraction(xwBCTOaYaxzFBjb, KRxIRImqPZWMSHl);
+assign(detA, PJhtAZhbuXhwaDL);
+assignToDoubleIndex(InvA, 1, 1, d);
+Variable *PTOyeziWkMGSovq = multiplication(minusOne, b);
+assignToDoubleIndex(InvA, 1, 2, PTOyeziWkMGSovq);
+Variable *zGDIxrPDdZpLcrW = multiplication(minusOne, c);
+assignToDoubleIndex(InvA, 2, 1, zGDIxrPDdZpLcrW);
+assignToDoubleIndex(InvA, 2, 2, a);
+print(InvA);
+printsep();
+print(detA);
 
     
 

@@ -1,7 +1,8 @@
-#include "../string_operations.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include "../utils.h"
+
 
 int main(){
     char *str = " \thela";
