@@ -7,5 +7,3 @@ print(A[2, 1])
 printsep()
 print(B[1])
 print(c)
-
-for(i in 1:n:1) {

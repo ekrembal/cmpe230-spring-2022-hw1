@@ -14,6 +14,7 @@ typedef struct Variable {
     // int variable_type;
     int dim1,dim2;
 }Variable;
+#include "dictionary.h"
 
 typedef struct StackNode{
     struct Variable* data;
@@ -150,7 +151,7 @@ void addOperationToList(const char *name){
 }
 
 
-void addNumberToList(const char *name){
+void addNumberToList(char *name){
     Variable* newVar = (Variable*)malloc(sizeof(Variable));
     newVar->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
     strcpy(newVar->name,name);
@@ -159,13 +160,19 @@ void addNumberToList(const char *name){
     newVar->dim2 = 1;
     addToList(&globalList, newVar);
 }
-void addIdentifierToList(const char *name){
+void addIdentifierToList(char *name){
     Variable* newVar = (Variable*)malloc(sizeof(Variable));
     newVar->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
-    strcpy(newVar->name,name);
-    newVar->feature = SCA;
-    newVar->dim1 = 4;
-    newVar->dim2 = 4;
+    Variable* temp = getFromDict(name);
+    if(temp == NULL){
+        printf("Variable %s not found\n", name);
+        raiseError();
+    }
+
+    strcpy(newVar->name,temp->name);
+    newVar->feature = temp->feature;
+    newVar->dim1 = temp->dim1;
+    newVar->dim2 = temp->dim2;
     addToList(&globalList, newVar);
 }
 
@@ -204,10 +211,11 @@ Variable* generateScalarFromNumber(Variable *var){
     newVar->dim1 = 1;
     newVar->dim2 = 1;
     fprintf(out, "Variable *%s = generateScalarFromNumber(%s);\n", newVar->name, var->name);
+    addNewScalar(newVar->name);
     return newVar;
 }
 
-Variable* processVars(Variable* a, Variable* b, const char *op){
+Variable *multiplication(Variable* a, Variable* b){
     char *rndstr = randString();
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->name=rndstr;
@@ -218,33 +226,145 @@ Variable* processVars(Variable* a, Variable* b, const char *op){
     if(b->feature == NUM){
         b = generateScalarFromNumber(b);
     }
-    // if( (a.feature == NUM && b.feature == VARIABLE ) || (a.feature == VARIABLE && b.feature == NUM ) || a.feature == NUM && b.feature == NUM){
-    //     newNode->variable_type=3;
-    // }                
-    // else if(a.variable_type == b.variable_type){
-    //     newNode->variable_type=a.variable_type;
-    //     if(a.variable_type == 1 && a.dim1 == b. dim1  && a.dim2 == b. dim2){
-    //         newNode->dim1 = a.dim1;
-    //         newNode->dim1 = b.dim2;
-    //     }
-    //     if(a.variable_type == 2 && a.dim1 == b.dim1 ){
-    //         newNode->dim1 = a.dim1;
-    //     }
-    // }
-    // else{
-    //     printf("ERROR");
-    // }
-    fprintf(out, "Variable *%s = %s( %s , %s );\n",  rndstr,  op, a->name , b->name  );
+    if(a->feature == SCA && b->feature == SCA){
+        newNode->feature = SCA;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewScalar(newNode->name);
+    }
+    else if(a->dim2 == b->dim1){
+        newNode->feature = MAT;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
+    }
+    else if(a->feature == SCA && b->feature == MAT){
+        newNode->feature = MAT;
+        newNode->dim1 = b->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
+    }
+    else if(a->feature == MAT && b->feature == SCA){
+        newNode->feature = MAT;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = a->dim2;
+        fprintf(out, "Variable *%s = multiply(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
+    }
+    else{
+        printf("Error: Cannot multiply %s and %s\n", a->name, b->name);
+        raiseError();
+    }
     return newNode;
 }
+
+Variable *substraction(Variable* a, Variable* b){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    // newNode->feature= VARIABLE;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    if(b->feature == NUM){
+        b = generateScalarFromNumber(b);
+    }
+    if(a->feature == SCA && b->feature == SCA){
+        newNode->feature = SCA;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = substraction(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewScalar(newNode->name);
+    }
+    else if(a->dim1 == b->dim1 && a->dim2 == b->dim2){
+        newNode->feature = MAT;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = substraction(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
+    }
+    else{
+        printf("Error: Cannot substract %s and %s\n", a->name, b->name);
+        raiseError();
+    }
+    return newNode;
+}
+
+
+Variable *addition(Variable* a, Variable* b){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    // newNode->feature= VARIABLE;
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    if(b->feature == NUM){
+        b = generateScalarFromNumber(b);
+    }
+    if(a->feature == SCA && b->feature == SCA){
+        newNode->feature = SCA;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = addition(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewScalar(newNode->name);
+    }
+    else if(a->dim1 == b->dim1 && a->dim2 == b->dim2){
+        newNode->feature = MAT;
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = b->dim2;
+        fprintf(out, "Variable *%s = addition(%s, %s);\n", newNode->name, a->name, b->name);
+        addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
+    }
+    else{
+        printf("Error: Cannot substract %s and %s\n", a->name, b->name);
+        raiseError();
+    }
+    return newNode;
+}
+
+// Variable* processVars(Variable* a, Variable* b, const char *op){
+//     char *rndstr = randString();
+//     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+//     newNode->name=rndstr;
+//     // newNode->feature= VARIABLE;
+//     if(a->feature == NUM){
+//         a = generateScalarFromNumber(a);
+//     }
+//     if(b->feature == NUM){
+//         b = generateScalarFromNumber(b);
+//     }
+//     fprintf(out, "Variable *%s = %s( %s , %s );\n",  rndstr,  op, a->name , b->name  );
+//     return newNode;
+// }
 
 Variable* processTr(Variable *a){
     char *rndstr = randString();
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->name=rndstr;
-    newNode->feature= MAT;
+    
     if(a->feature == NUM){
         a = generateScalarFromNumber(a);
+    }
+    if(a->feature == SCA){
+        newNode->dim1 = a->dim1;
+        newNode->dim2 = a->dim2;
+        newNode->feature= SCA;
+        fprintf(out, "Variable *%s = transpose(%s);\n", newNode->name, a->name);
+        addNewScalar(newNode->name);
+    }
+    else if(a->feature == MAT || a->feature==VEC){
+        newNode->dim1 = a->dim2;
+        newNode->dim2 = a->dim1;
+        newNode->feature= MAT;
+        addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
+    }
+    else {
+        printf("Error: Cannot transpose %s\n", a->name);
+        raiseError();
     }
     fprintf(out, "Variable *%s = transpose( %s );\n",  rndstr,  a->name  );
     return newNode;
@@ -255,6 +375,8 @@ Variable* processChoose(Variable *a,Variable *b,Variable *c,Variable *d){
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->name=rndstr;
     newNode->feature= SCA;
+    newNode->dim1 = 1;
+    newNode->dim2 = 1;
     if(a->feature == NUM){
         a = generateScalarFromNumber(a);
     }
@@ -267,7 +389,16 @@ Variable* processChoose(Variable *a,Variable *b,Variable *c,Variable *d){
     if(d->feature == NUM){
         d = generateScalarFromNumber(d);
     }
+    checkExistence(a);
+    checkExistence(b);
+    checkExistence(c);
+    checkExistence(d);
+    if(a->feature != SCA || b->feature != SCA || c->feature != SCA || d->feature != SCA){
+        printf("Error: Cannot choose %s, %s, %s, %s\n", a->name, b->name, c->name, d->name);
+        raiseError();
+    }
     fprintf(out, "Variable *%s = choose( %s, %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
+    addNewScalar(newNode->name);
     return newNode;
 }
 
@@ -275,11 +406,20 @@ Variable* processSqrt(Variable *a){
     char *rndstr = randString();
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->name=rndstr;
-    newNode->feature= MAT;
+    newNode->feature= SCA;
     if(a->feature == NUM){
         a = generateScalarFromNumber(a);
     }
+    checkExistence(a);
+    if(a->feature != SCA){
+        printf("Error: Cannot sqrt %s\n", a->name);
+        raiseError();
+    }
+    newNode->dim1 = 1;
+    newNode->dim2 = 1;
+
     fprintf(out, "Variable *%s = sqrt( %s );\n",  rndstr,  a->name  );
+    addNewScalar(newNode->name);
     return newNode;
 }
 
@@ -288,6 +428,8 @@ Variable* processGetDoubleIndex(Variable *a, Variable *b, Variable *c){
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->name=rndstr;
     newNode->feature= SCA;
+    newNode->dim1 = 1;
+    newNode->dim2 = 1;
     if(a->feature == NUM){
         a = generateScalarFromNumber(a);
     }
@@ -297,7 +439,40 @@ Variable* processGetDoubleIndex(Variable *a, Variable *b, Variable *c){
     if(c->feature == NUM){
         c = generateScalarFromNumber(c);
     }
+    checkExistence(a);
+    checkExistence(b);
+    checkExistence(c);
+    if(a->feature != MAT || b->feature != SCA || c->feature != SCA){
+        printf("Error: Cannot get double index %s, %s, %s\n", a->name, b->name, c->name);
+        raiseError();
+    }
     fprintf(out, "Variable *%s = getDoubleIndex( %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name  );
+    addNewScalar(newNode->name);
+    return newNode;
+}
+
+Variable* processGetSingleIndex(Variable *a, Variable *b){
+    char *rndstr = randString();
+    struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
+    newNode->name=rndstr;
+    newNode->feature= SCA;
+    newNode->dim1 = 1;
+    newNode->dim2 = 1;
+
+    if(a->feature == NUM){
+        a = generateScalarFromNumber(a);
+    }
+    if(b->feature == NUM){
+        b = generateScalarFromNumber(b);
+    }
+    checkExistence(a);
+    checkExistence(b);
+    if(a->feature != VEC || b->feature != SCA ){
+        printf("Error: Cannot get double index %s, %s\n", a->name, b->name);
+        raiseError();
+    }
+    fprintf(out, "Variable *%s = getSingleIndex( %s, %s );\n",  rndstr,  a->name, b->name  );
+    addNewScalar(newNode->name);
     return newNode;
 }
 
@@ -334,7 +509,7 @@ Variable* evaluateList( struct List* list){
                 pop(stack);
                 Variable* b = top(stack);
                 pop(stack);
-                Variable* c = processVars(a,b, "addition");
+                Variable* c = addition(a,b);
                 push(stack, c);
 
             }
@@ -343,7 +518,7 @@ Variable* evaluateList( struct List* list){
                 pop(stack);
                 Variable* b = top(stack);
                 pop(stack);
-                Variable* c = processVars(b, a, "substraction");
+                Variable* c = substraction(b, a);
                 push(stack, c);
             }   
             if(strcmp(var->name , "*")==0){
@@ -351,7 +526,7 @@ Variable* evaluateList( struct List* list){
                 pop(stack);
                 Variable* b = top(stack);
                 pop(stack);
-                Variable* c = processVars(a,b, "multiplication");
+                Variable* c = multiplication(b, a);
                 push(stack, c);
             }
             if(strcmp(var->name , "tr")==0){  
@@ -383,7 +558,7 @@ Variable* evaluateList( struct List* list){
                 pop(stack);
                 Variable* b = top(stack);
                 pop(stack);
-                Variable* c = processVars(a, b, "getSingleIndex");
+                Variable* c = processGetSingleIndex(a, b);
                 push(stack, c);
             }
             if(strcmp(var->name , "getDoubleIndex")==0){

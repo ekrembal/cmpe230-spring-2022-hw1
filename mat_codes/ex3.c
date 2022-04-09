@@ -10,12 +10,12 @@ Variable *lrfkQyuQFjKXyQV = generateScalarFromNumber(1);
 Variable *NRTySFrzrmzlYGF = generateScalarFromNumber(10);
 Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(1);
 for(assign(i,lrfkQyuQFjKXyQV); isLower(i,NRTySFrzrmzlYGF); increase(i,vEulQfpDBHlqDqr)){
-Variable *rCRwDnXeuOQqekl = multiplication( x , A );
+Variable *rCRwDnXeuOQqekl = multiply(A, x);
 assign(y, rCRwDnXeuOQqekl);
-Variable *AITGDPHCSPIjtHb = substraction( y , x );
+Variable *AITGDPHCSPIjtHb = substraction(y, x);
 Variable *sFyfvlADzPBfudk = transpose( AITGDPHCSPIjtHb );
-Variable *KlrwqAOzMiXrpif = substraction( y , x );
-Variable *EffECLhbVFUkBye = multiplication( KlrwqAOzMiXrpif , sFyfvlADzPBfudk );
+Variable *KlrwqAOzMiXrpif = substraction(y, x);
+Variable *EffECLhbVFUkBye = multiply(sFyfvlADzPBfudk, KlrwqAOzMiXrpif);
 assign(T, EffECLhbVFUkBye);
 Variable *TxWJLkNgbqQmBxQ = generateScalarFromNumber(1);
 Variable *CQptkhHqrQdwfcA = generateScalarFromNumber(1);

@@ -7,8 +7,8 @@ assignToFlatten(A, 0, 0);assignToFlatten(A, 1, 1);assignToFlatten(A, 2, 2);assig
 assignToFlatten(x, 1, 0);assignToFlatten(x, 1, 1);assignToFlatten(x, 1, 2);assignToFlatten(x, 1, 3);
 assignToFlatten(xy2, 2, 0);assignToFlatten(xy2, 1, 1);assignToFlatten(xy2, 3, 2);assignToFlatten(xy2, 1, 3);
 Variable *lrfkQyuQFjKXyQV = transpose( x );
-Variable *NRTySFrzrmzlYGF = multiplication( xy2 , A );
-Variable *vEulQfpDBHlqDqr = multiplication( NRTySFrzrmzlYGF , lrfkQyuQFjKXyQV );
+Variable *NRTySFrzrmzlYGF = multiply(A, xy2);
+Variable *vEulQfpDBHlqDqr = multiply(lrfkQyuQFjKXyQV, NRTySFrzrmzlYGF);
 assign(T, vEulQfpDBHlqDqr);
 Variable *AITGDPHCSPIjtHb = generateScalarFromNumber(1);
 Variable *sFyfvlADzPBfudk = generateScalarFromNumber(1);

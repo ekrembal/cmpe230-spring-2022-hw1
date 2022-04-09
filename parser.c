@@ -9,6 +9,7 @@ FILE *out;
 #include "parser_graph.h"
 #include "stack_operations.h"
 #include "expr.h"
+#include "dictionary.h"
 #define MAX_TOKENS 1024
 int lineCount = 0;
 
@@ -36,6 +37,7 @@ bool isArraysEqual(int *arr1, int *arr2){
 
 void giveError(){
 	printf("Error in line %d\n", lineCount);
+    fclose(out);
 	exit(1);
 }
 
@@ -144,26 +146,47 @@ int main(int argc, char *argv[]) {
 			continue;
 		} else if(isArraysEqual(tokens, CREATING_SCALAR_TOKENS)){
 			// printf("CREATING SCALAR\n");
-			// TODO: Check if variable is already declared
-			// TODO: Check if numbers are not floating point
+            if(isExist(tokenChars[1])){
+                printf("Error in line %d: Variable %s already exists\n", lineCount, tokenChars[1]);
+                giveError();
+            }
 			fprintf(out, "Variable *%s = createScalar();\n", tokenChars[1]);
-			// TODO: add this scalar to dictionary
+            addNewScalar(tokenChars[1]);
 		} else if(isArraysEqual(tokens, CREATING_VECTOR_TOKENS)){
-			// printf("CREATING VECTOR with len %d\n", atoi(tokenChars[3]));
-			// TODO: Check if variable is already declared
-			// TODO: Check if numbers are not floating point
+            if(isExist(tokenChars[1])){
+                printf("Error in line %d: Variable %s already exists\n", lineCount, tokenChars[1]);
+                giveError();
+            }
 			fprintf(out, "Variable *%s = createVector(%d);\n", tokenChars[1], atoi(tokenChars[3]));
-			// TODO: add this vector to dictionary
+            addNewVector(tokenChars[1], atoi(tokenChars[3]));
 		} else if(isArraysEqual(tokens, CREATING_MATRIX_TOKENS)){
-			// printf("CREATING MATRIX with shape %d %d\n", atoi(tokenChars[3]), atoi(tokenChars[5]));
-			// TODO: Check if variable is already declared
-			// TODO: Check if numbers are not floating point
+            if(isExist(tokenChars[1])){
+                printf("Error in line %d: Variable %s already exists\n", lineCount, tokenChars[1]);
+                giveError();
+            }
 			fprintf(out, "Variable *%s = createMatrix(%d, %d);\n", tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
-			// TODO: Add this matrix to dictionary
+            addNewMatrix(tokenChars[1], atoi(tokenChars[3]), atoi(tokenChars[5]));
 		} else if(constantAssignment){
 			// printf("CONSTANT ASSIGNMENT to the variable %s with %d numbers\n", tokenChars[0], constantAssignment);
 			// TODO: check if sizes match
 			// printf("assignMultiple(&%s, ", tokenChars[0]);
+            if(!isExist(tokenChars[0])){
+                printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[0]);
+                giveError();
+            }
+
+            Variable * var = getFromDict(tokenChars[0]);
+            printf("Got variable %s with sizes %d %d\n", tokenChars[0], var->dim1, var->dim2);
+            if(var->feature == SCA){
+                printf("Error in line %d: Variable %s is a scalar\n", lineCount, tokenChars[0]);
+                giveError();
+            }
+            int size = var->dim1 * var->dim2;
+            if(constantAssignment != size){
+                printf("Error in line %d: Constant assignment size does not match the size of the variable %s\n", lineCount, tokenChars[0]);
+                giveError();
+            }
+
 			for(int i = 0; i < constantAssignment; i++){
                 fprintf(out, "assignToFlatten(%s, %s, %d);", tokenChars[0], tokenChars[i + 3], i);
 				// printf("%s", tokenChars[i + 3]);
@@ -179,6 +202,10 @@ int main(int argc, char *argv[]) {
             && (tokens[2] == IDENTIFIER)
             && (tokens[3] == RIGHT_PARENTHESIS)
             ){
+                if(!isExist(tokenChars[2])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
                 fprintf(out, "print(%s);\n", tokenChars[2]);
             } else if(tokens[1] == LEFT_PARENTHESIS
             && (tokens[2] == IDENTIFIER)
@@ -187,6 +214,15 @@ int main(int argc, char *argv[]) {
             && (tokens[5] == RIGHT_BRACKET)
             && (tokens[6] == RIGHT_PARENTHESIS)
             ){
+                if(!isExist(tokenChars[2])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
+                Variable *var = getFromDict(tokenChars[2]);
+                if(var->feature != VEC){
+                    printf("Error in line %d: Variable %s is not a vector\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
                 fprintf(out, "print(getSingleIndex(%s, %s));\n", tokenChars[2], tokenChars[4]);
             } else if(tokens[1] == LEFT_PARENTHESIS
             && (tokens[2] == IDENTIFIER)
@@ -197,6 +233,16 @@ int main(int argc, char *argv[]) {
             && (tokens[7] == RIGHT_BRACKET)
             && (tokens[8] == RIGHT_PARENTHESIS)
             ){
+                if(!isExist(tokenChars[2])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
+                Variable *var = getFromDict(tokenChars[2]);
+                if(var->feature != MAT){
+                    printf("Error in line %d: Variable %s is not a matrix\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
+                // TODO check if the indices are correct
                 fprintf(out, "print(getDoubleIndex(%s, %s, %s));\n", tokenChars[2], tokenChars[4], tokenChars[6]);
             } else {
                 raiseError();
@@ -227,6 +273,16 @@ int main(int argc, char *argv[]) {
                 tempLeft = parseExpression(tempLeft + 1, len);
                 Variable* expr3 = evaluateList(&globalList);
                 forLoopType=1;
+
+                Variable* var = getFromDict(tokenChars[2]);
+                if(var->feature != SCA){
+                    printf("Error in line %d: Variable %s is not a scalar\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
+                if(expr1->feature != SCA || expr2->feature != SCA || expr3->feature != SCA){
+                    printf("Error in line %d: Expression in for loop is not a scalar\n", lineCount);
+                    giveError();
+                }
                 fprintf(out, "for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[2],expr1->name, tokenChars[2],expr2->name, tokenChars[2],expr3->name);
             } else if(tokens[1] == LEFT_PARENTHESIS
             && (tokens[2] == IDENTIFIER)
@@ -266,6 +322,20 @@ int main(int argc, char *argv[]) {
                 tempLeft = parseExpression(tempLeft + 1, len);
                 Variable* expr6 = evaluateList(&globalList);
                 forLoopType=2;
+
+                if(!isExist(tokenChars[2])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
+                Variable* var = getFromDict(tokenChars[2]);
+                if(var->feature != SCA){
+                    printf("Error in line %d: Variable %s is not a scalar\n", lineCount, tokenChars[2]);
+                    giveError();
+                }
+                if(expr1->feature != SCA || expr2->feature != SCA || expr3->feature != SCA || expr4->feature != SCA || expr5->feature != SCA || expr6->feature != SCA){
+                    printf("Error in line %d: Expression in for loop is not a scalar\n", lineCount);
+                    giveError();
+                }
                 fprintf(out, "for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[2],expr1->name, tokenChars[2],expr2->name, tokenChars[2],expr3->name);
                 fprintf(out, "for(assign(%s,%s); isLower(%s,%s); increase(%s,%s)){\n", tokenChars[4],expr4->name, tokenChars[4],expr5->name, tokenChars[5],expr6->name);
             } else {
@@ -278,6 +348,7 @@ int main(int argc, char *argv[]) {
             } else if(forLoopType==2){
                 fprintf(out, "}}\n");
             } else{
+                printf("Error in line %d: For loop not started\n", lineCount);
                 raiseError();
             }
             forLoopType=0;
@@ -294,6 +365,17 @@ int main(int argc, char *argv[]) {
             ){
                 tempLeft = parseExpression(2, len - 1);
                 Variable* expr1 = evaluateList(&globalList);
+                if(!isExist(tokenChars[0])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[0]);
+                    giveError();
+                }
+                Variable* var = getFromDict(tokenChars[0]);
+                if(var->dim1 != expr1->dim1 || var->dim2 != expr1->dim2){
+                    printf("Error in line %d: Variable %s is not of the same size as the expression\n", lineCount, tokenChars[0]);
+                    printf("Variable size: %d, %d\n", var->dim1, var->dim2);
+                    printf("Expression size: %d, %d\n", expr1->dim1, expr1->dim2);
+                    giveError();
+                }
                 fprintf(out, "assign(%s, %s);\n", tokenChars[0], expr1->name);
             } else if(
             tokens[0] == IDENTIFIER
@@ -305,6 +387,20 @@ int main(int argc, char *argv[]) {
             ){
                 tempLeft = parseExpression(5, len - 1);
                 Variable* expr1 = evaluateList(&globalList);
+                if(!isExist(tokenChars[0])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[0]);
+                    giveError();
+                }
+                Variable* var = getFromDict(tokenChars[0]);
+                if(var->feature != VEC){
+                    printf("Error in line %d: Variable %s is not a vector\n", lineCount, tokenChars[0]);
+                    giveError();
+                }
+                if(expr1->feature != SCA){
+                    printf("Error in line %d: Expression in single assingment is not a scalar\n", lineCount);
+                    giveError();
+                }
+
                 fprintf(out, "assignToSingleIndex(%s, %s, %s);\n", tokenChars[0], tokenChars[3], expr1->name);
             } else if(
             tokens[0] == IDENTIFIER
@@ -318,6 +414,20 @@ int main(int argc, char *argv[]) {
             ){
                 tempLeft = parseExpression(7, len - 1);
                 Variable* expr1 = evaluateList(&globalList);
+
+                if(!isExist(tokenChars[0])){
+                    printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[0]);
+                    giveError();
+                }
+                Variable* var = getFromDict(tokenChars[0]);
+                if(var->feature != MAT){
+                    printf("Error in line %d: Variable %s is not a vector\n", lineCount, tokenChars[0]);
+                    giveError();
+                }
+                if(expr1->feature != SCA){
+                    printf("Error in line %d: Expression in single assingment is not a scalar\n", lineCount);
+                    giveError();
+                }
                 fprintf(out, "assignToDoubleIndex(%s, %s, %s, %s);\n", tokenChars[0], tokenChars[3], tokenChars[5], expr1->name);
             } else {
                 printf("Buradayken error veri expr assignment bulunamadi\n");

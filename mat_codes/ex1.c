@@ -1,8 +1,3 @@
-#include <stdio.h>
-
-#include "template.h"
-
-int main(){
 Variable *i = createScalar();
 Variable *n = createScalar();
 Variable *x = createVector(2);
@@ -18,10 +13,9 @@ print(x);
 Variable *NRTySFrzrmzlYGF = generateScalarFromNumber(1);
 Variable *vEulQfpDBHlqDqr = generateScalarFromNumber(1);
 for(assign(i,NRTySFrzrmzlYGF); isLower(i,n); increase(i,vEulQfpDBHlqDqr)){
-Variable *rCRwDnXeuOQqekl = multiplication( B , A );
+Variable *rCRwDnXeuOQqekl = multiply(A, B);
 assign(B, rCRwDnXeuOQqekl);
-Variable *AITGDPHCSPIjtHb = multiplication( x , B );
+Variable *AITGDPHCSPIjtHb = multiply(B, x);
 assign(y, AITGDPHCSPIjtHb);
 print(getSingleIndex(y, 1));
-}
 }
