@@ -67,8 +67,8 @@ struct Variable generateScalarFromNumber(double var){
 struct Variable addition( struct Variable a , struct Variable b ){
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->feature = a.feature;
-    newNode->dim1 = 1;
-    newNode->dim2 = 1;
+    newNode->dim1 = a.dim1;
+    newNode->dim2 = a.dim2;
     for( int i = 0 ;  i < a.dim1 ; i++ ){
         for(int j = 0 ; j < a.dim2 ; j++ ){
             newNode.val[i][j] = a.val[i][j] + b.val[i][j];
@@ -80,8 +80,8 @@ struct Variable addition( struct Variable a , struct Variable b ){
 struct Variable substraction(struct Variable a, struct Variable b){
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     newNode->feature = a.feature;
-    newNode->dim1 = 1;
-    newNode->dim2 = 1;
+    newNode->dim1 = a.dim1;
+    newNode->dim2 = a.dim2;
     for( int i = 0 ;  i < a.dim1 ; i++ ){
         for(int j = 0 ; j < a.dim2 ; j++ ){
             newNode.val[i][j] = a.val[i][j] - b.val[i][j];
@@ -128,8 +128,22 @@ void print( struct Variable a){
         printf("\n");
     }
 }
-
-
+void assign(double *ptr, double val){
+    *ptr = val;
+    return;
+}
+double* getDoublePointer(struct Variable a, int index){
+    if(a.dim1==1 && a.dim2==1){
+        return a.val;
+    }
+    if((a.dim1==1 && !a.dim2==1) || (!a.dim1==1 && a.dim2==1)){
+        return *(a.val+index);
+    }
+    if((!a.dim1==1 && !a.dim2==1)){
+        return *((a.val+index/dim1)+index%dim1)
+    }
+    return &(a+index);
+}
 
 
 
