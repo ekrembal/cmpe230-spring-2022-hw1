@@ -10,3 +10,5 @@ build:
 	./matlang2c mat_codes/inv2by2.mat
 	./matlang2c mat_codes/convolution.mat
 	./matlang2c mat_codes/operations.mat
+	./matlang2c mat_codes/sieve.mat
+	./matlang2c mat_codes/print_cycles.mat

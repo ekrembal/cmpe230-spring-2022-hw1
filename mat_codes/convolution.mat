@@ -22,9 +22,9 @@ image = {0 1 0 0 0 1 1 1 0 0 0 1 0 1 0 0 0 1 1 1 0 1 0 1 0}
 #01010
 filter = {0 1 0 1 1 1 0 1 0}
 
-for(i, j in 1:n - filterSize + 1:1, 1:n - filterSize + 1:1){
-    print(i)
-    print(j)
+for(i, j in 1:(n - filterSize) + 1:1, 1:(n - filterSize) + 1:1){
+    # print(i)
+    # print(j)
     temp[1, 1] = image[i, j]
     temp[1, 2] = image[i, j + 1]
     temp[1, 3] = image[i, j + 2]
@@ -37,7 +37,7 @@ for(i, j in 1:n - filterSize + 1:1, 1:n - filterSize + 1:1){
     sum = temp[1, 1]*filter[1, 1] + temp[1, 2]*filter[1, 2] + temp[1, 3]*filter[1, 3]
     sum = sum + temp[2, 1]*filter[2, 1] + temp[2, 2]*filter[2, 2] + temp[2, 3]*filter[2, 3]
     sum = sum + temp[3, 1]*filter[3, 1] + temp[3, 2]*filter[3, 2] + temp[3, 3]*filter[3, 3]
-    res[i, j] = choose(sum- 5, 1, 2, 3)
+    res[i, j] = choose(sum- 5, 1, 0, 0)
 }
 
 print(res)

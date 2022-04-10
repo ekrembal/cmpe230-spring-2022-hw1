@@ -7,9 +7,7 @@
 #define EPS 0.00001
 enum type{OP, NUM, MAT, VEC, SCA};
 
-// VEC / SCA / MAT/ NUM/ OP
 typedef struct Variable {
-    char *name;
     int feature;
     int dim1,dim2;
     double val[1000][1000];
@@ -43,14 +41,12 @@ struct Variable * createMatrix(int a , int b){
 struct Variable * multiplication(struct Variable * a, struct Variable * b){
     struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
     
-    //SCALAR * SCALAR
     if( (a->dim1 == 1 && a->dim2 == 1 ) && (b->dim1 == 1 && b->dim2 == 1)){
         newNode->feature = SCA;
         newNode->dim1=1;
         newNode->dim2=1;
         newNode->val[0][0] = a->val[0][0] * b->val[0][0];
     }
-    //SCALAR * ( MATRIX OR VECTOR )
     
     else if( (a->dim1 == 1 && a->dim2 == 1 ) && !(b->dim1 == 1 && b->dim2 == 1) ){
         newNode->feature = MAT;
@@ -62,7 +58,6 @@ struct Variable * multiplication(struct Variable * a, struct Variable * b){
             }
         }
     }
-    // (MATRIX OR VECTOR) * SCALAR
 
     else if( !(a->dim1 == 1 && a->dim2 == 1 ) && (b->dim1 == 1 && b->dim2 == 1) ){
         newNode->feature = MAT;
@@ -74,7 +69,6 @@ struct Variable * multiplication(struct Variable * a, struct Variable * b){
             }
         }
     }
-    // (MATRIX OR VECTOR) * (MATRIX OR VECTOR)
     else if( !(a->dim1 == 1 && a->dim2 == 1 ) && !(b->dim1 == 1 && b->dim2 == 1) ){
         newNode->feature = MAT;
         newNode->dim1=a->dim1;
@@ -163,7 +157,7 @@ struct Variable * choose( struct Variable * expr1, struct Variable * expr2, stru
     else if( expr1->val[0][0] < 0 ){
         return expr4;
     }
-    return expr1;// not to get warning from compiler
+    return expr1;
 }
 void print( struct Variable * a){
     for( int i = 0 ; i < a->dim1 ; i++ ){
@@ -201,10 +195,10 @@ struct Variable * getSingleIndexInt(struct Variable * a , int index ){
         return newNode;
 }
 struct Variable * getSingleIndex(struct Variable * a , struct Variable * index ){
-        index->val[0][0]--;
+        int temp = index->val[0][0] - 1;
         struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
-        int row = (int)index->val[0][0] / a->dim2;
-        int column = (int)index->val[0][0] % a->dim2;
+        int row = temp / a->dim2;
+        int column = temp % a->dim2;
         newNode->dim1=1;
         newNode->dim2=1;
         newNode->feature=SCA;
@@ -232,7 +226,6 @@ void assign(struct Variable * a, struct Variable * b ){
     a->dim1 = b->dim1;
     a->dim2 = b->dim2;
     a->feature = b->feature;
-    a->name = b->name;
     for( int i = 0 ; i < 999 ; i++){
         for( int j  = 0 ;  j  < 999 ; j++){
             a->val[i][j] = b->val[i][j];

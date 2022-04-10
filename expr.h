@@ -171,26 +171,28 @@ int moreterms(int left, int right, bool flag){
     if(DEBUG){ printf("moreterms(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n"); }
     if(left > right)return left;
     // if(DEBUG) printf("moreterms(%d, %d)\n", left, right);
-    int tempLeft;
-    if( ((tokens[left] == ADDITION) || (tokens[left] == SUBTRACTION)) && ((tempLeft = term(left + 1, right, false)) != -1) && ((tempLeft = moreterms(tempLeft, right, false)) != -1)){
+    int tempLeft = 0;
+    if( ((tokens[left] == ADDITION)) && ((tempLeft = term(left + 1, right, false)) != -1) && ((tempLeft = moreterms(tempLeft, right, false)) != -1)){
         if(flag){
             tempLeft = 0;
             tempLeft = term(left + 1, right, true);
             tempLeft = moreterms(tempLeft, right, true);
-            if(tokens[left] == ADDITION){
-                addOperationToList("+");
-                // printf("+ ");
-            }
-            else{
-                addOperationToList("-");
-                // printf("- ");
-            }
+            addOperationToList("+");
         }
-        // addOperationToList(tokenChars[left]);
-        // printf("###%s### ", tokenChars[left]);
-        // exit(0);
 		return tempLeft;
 	}
+    tempLeft = 0;
+    if( ((tokens[left] == SUBTRACTION)) && ((tempLeft = term(left + 1, right, false)) != -1) && ((tempLeft = moreterms(tempLeft, right, false)) != -1)){
+        if(flag){
+            tempLeft = 0;
+            tempLeft = term(left + 1, right, true);
+            addOperationToList("-");
+            tempLeft = moreterms(tempLeft, right, true);
+            
+        }
+		return tempLeft;
+	}
+    
 	return left;
 }
 
