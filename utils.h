@@ -4,6 +4,13 @@
 #include "enums.h"
 #include "globals.h"
 
+void raiseError(){
+	printf("Error (Line %d)\n", lineCount);
+    fclose(out);
+    remove(output_file_name);
+	exit(0);
+}
+
 bool isVariableChar(char c) {
     if(c >= 'a' && c <= 'z')
         return true;
@@ -59,11 +66,7 @@ bool isArraysEqual(int *arr1, int *arr2){
 	return (arr1[i] == -1 && arr2[i] == -1);
 }
 
-void giveError(){
-	printf("Error in line %d\n", lineCount);
-    fclose(out);
-	exit(1);
-}
+
 
 void removeComments(char *str) {
 	int len = strlen(str);

@@ -2,13 +2,17 @@ matrix A[2, 2]
 matrix InvA[2, 2]
 scalar detA
 scalar minusOne
-minusOne = 2-1
-A = {1 2 3 5}
+
 
 scalar a
 scalar b
 scalar c
 scalar d
+
+minusOne = 2-1
+A = {1 2 3 5}
+
+
 
 a = A[1, 1]
 b = A[1, 2]

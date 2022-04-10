@@ -1,0 +1,30 @@
+matrix A[3,2]
+matrix B[2,3]
+matrix C[3,3]
+
+matrix D[3,3]
+matrix E[3,3]
+matrix k[1,3]
+vector x[3]
+
+A = {1 2 3 4 5 6}
+B = {1 2 3 4 5 6}
+C = {1 2 3 4 5 6 7 8 9}
+D = A*B*C
+print(D)
+
+k = D*x
+print(k)
+E = E + E + D
+
+print(E)
+
+
+# Output is:
+# 162 198 234
+# 354 432 510
+# 546 666 786
+# 0 0 0
+# 162 198 234
+# 354 432 510
+# 546 666 786

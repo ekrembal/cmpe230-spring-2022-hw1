@@ -1,9 +1,7 @@
 #ifndef _expr_h
 #define _expr_h
-// #include "parser_graph.h"
 
-#define DEBUG false
-
+#include "globals.h"
 int factor(int, int, bool);
 int term(int, int, bool);
 int expr(int, int, bool);
@@ -18,13 +16,9 @@ int factor(int left, int right, bool flag){
     int tempLeft = 0;
 	if(tokens[left] == LEFT_PARENTHESIS && (tempLeft = expr(left + 1, right, false)) != -1 && tokens[tempLeft] == RIGHT_PARENTHESIS ){
         if(flag){
-            // printf("PARANTEX bulundu\n");
             tempLeft = 0;
             tempLeft = expr(left + 1, right, true);
-
-
         }
-        // printf("YEYYY(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n");
         return tempLeft+1;
 	}
     tempLeft = 0;
@@ -43,7 +37,6 @@ int factor(int left, int right, bool flag){
                 tempLeft = expr(tempLeft + 1, right, true);
                 addIdentifierToList(tokenChars[left]);
                 addOperationToList("getDoubleIndex");
-                // printf("getDoubleIndex ");
             }
             return tempLeft + 1;
         }
@@ -60,11 +53,7 @@ int factor(int left, int right, bool flag){
                 tempLeft = expr(left + 2, right, true);
                 addIdentifierToList(tokenChars[left]);
                 addOperationToList("getSingleIndex");
-                // printf("getSingleIndex ");
             }
-            // addIdentifierToList(tokenChars[left]);
-            // addOperationToList("getSingleIndex");
-            // printf("getSingleIndex ");
             return tempLeft + 1;
         }
     tempLeft = 0;
@@ -79,26 +68,9 @@ int factor(int left, int right, bool flag){
                 tempLeft = 0;
                 tempLeft = expr(left + 2, right, true);
                 addOperationToList("sqrt");
-                // printf("sqrt ");
             }
-            // addOperationToList("sqrt");
-            // printf("SQRT ");
             return tempLeft + 1;
         }
-    tempLeft = 0;
-    // if(tokens[left] == CHOOSE){
-    //     printf("Choose bulundu\n");
-    //     if((tempLeft = expr(left + 2, right)) != -1){
-    //         printf("%d'e kadar expr bulundu\n", tempLeft);
-    //     }
-    //     printf("OFF teni templeft = %d\n", tempLeft);
-    //     if(tokens[tempLeft] == COMMA){
-    //         printf("%d'de virgul bulundu\n",tempLeft);
-    //     }
-    //     return tempLeft;
-
-
-    // }
     tempLeft = 0;
     if(
         tokens[left] == CHOOSE &&
@@ -120,10 +92,7 @@ int factor(int left, int right, bool flag){
                 tempLeft = expr(tempLeft + 1, right, true);
                 tempLeft = expr(tempLeft + 1, right, true);
                 addOperationToList("choose");
-                // printf("choose ");
             }
-            // addOperationToList("choose");
-            // printf("Choose ");
             return tempLeft + 1;
         }
     tempLeft = 0;
@@ -140,10 +109,7 @@ int factor(int left, int right, bool flag){
     if(tokens[left] == NUMBER){
         if(flag){
             addNumberToList(tokenChars[left]);
-            // printf("%s ", tokenChars[left]);
         }
-        // addNumberToList(tokenChars[left]);
-        // printf("##%s## ", tokenChars[left]);
         return left + 1;
     }
     tempLeft = 0;
@@ -158,10 +124,7 @@ int factor(int left, int right, bool flag){
                 tempLeft = 0;
                 tempLeft = expr(left + 2, right, true);
                 addOperationToList("tr");
-                // printf("tr ");
             }
-            // addOperationToList("tr");
-            // printf("tr ");
             return tempLeft + 1;
         }
     return -1;
@@ -202,30 +165,16 @@ int morefactors(int left, int right, bool flag){
     int tempLeft;
     if(left >= right)
         return left;
-        // exit(0);
 	if(tokens[left] == MULTIPLICATION && ((tempLeft = factor(left + 1, right, false)) != -1) && ((tempLeft = morefactors(tempLeft, right, false)) != -1)){
         if(flag){
             tempLeft = 0;
             tempLeft = factor(left + 1, right, true);
             tempLeft = morefactors(tempLeft, right, true);
             addOperationToList("*");
-            // printf("* ");
         }
-        // addOperationToList("*");
-        // printf("* ");
-        // printf("%s ",enumToString(tokens[left]));
-        // printf("GELDIIIIIIII %d %d %d\n",left,right, tempLeft);
-        // exit(0);
         return tempLeft;
     }
     return left;
-	// printf("%d\n", tokens[left]);
-	// left++;
-	// if()
-	// 	return -1;
-	// if( (left = morefactors(left, right)) == -1)
-	// 	return -1;
-	// return left;
 }
 
 int term(int left, int right, bool flag){
@@ -268,7 +217,7 @@ int parseExpression(int left, int right){
     int tempLeft = expr(left, right, true);
     // printf("%d %d %d\n", left, right, tempLeft);
     if(tempLeft == -1){
-        printf("Hata: Parse hatasi\n");
+        if(DEBUG){printf("Hata: Parse hatasi\n");}
         return -1;
     }
     return tempLeft;

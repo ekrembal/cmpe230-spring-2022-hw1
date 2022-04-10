@@ -20,25 +20,7 @@ void push(struct Stack* stack, struct Variable* data){
     stack->top = newNode;
     stack->size++;
 
-    // stack->top->next = newNode;
-    // stack->top = newNode;
-    // stack->size++;
     return;
-    // newNode->next = stack->top;
-    // stack->top = newNode;
-    // printf("push %s\n", data->name);
-    // struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));
-    // // newNode->name = data.name;
-    // // strcpy(newNode->name, data.name);
-    // // newNode->feature = data.feature;
-    // // newNode->variable_type = data.variable_type;
-    // newNode->dim1 = data.dim1;
-    // newNode->dim2 = data.dim2;
-    // newNode->next = NULL;
-    // stack->top->next = newNode;
-    // // stack->top = newNode;
-    // // stack->size++;
-    // printf("push %s\n", data->name);
 }
 struct Variable* top(struct Stack* stack){
     return stack->top->data;
@@ -55,11 +37,8 @@ int isEmpty(struct Stack* stack){
 }
 struct Stack* createStack(){
     struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
-    printf("B\n");
     stack->top = NULL;
-    printf("C\n");
     stack->size = 0;
-    printf("D\n");
     return stack;
 }
 int sizeOfStack(struct Stack* stack){
@@ -100,17 +79,6 @@ void addToList( struct List* list , struct Variable* var ){
         list->end = newNode;
         list->size++;
     }
-    return;
-    // if(list->size==0){
-    //     list->start = &var;
-    //     list->end = &var;
-    //     list->size++;
-    // }
-    // else{
-    //     list->end->next = &var;
-    //     list->end = &var;
-    //     list->size++;
-    // }
 }   
 
 
@@ -139,7 +107,7 @@ void addIdentifierToList(char *name){
     newVar->name = (char*)malloc(sizeof(char)*(strlen(name)+1));
     Variable* temp = getFromDict(name);
     if(temp == NULL){
-        printf("Variable %s not found\n", name);
+        if(DEBUG){printf("Variable %s not found\n", name);}
         raiseError();
     }
 
@@ -152,7 +120,7 @@ void addIdentifierToList(char *name){
 
 char *randString() {
     int length = 15;
-    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";        
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";        
     char *randomString = NULL;
 
     if (length) {
@@ -229,7 +197,7 @@ Variable *multiplication(Variable* a, Variable* b){
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{
-        printf("Error: Cannot multiply %s and %s\n", a->name, b->name);
+        if(DEBUG){printf("Error: Cannot multiply %s and %s\n", a->name, b->name);}
         raiseError();
     }
     return newNode;
@@ -261,7 +229,7 @@ Variable *substraction(Variable* a, Variable* b){
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{
-        printf("Error: Cannot substract %s and %s\n", a->name, b->name);
+        if(DEBUG){printf("Error: Cannot substract %s and %s\n", a->name, b->name);}
         raiseError();
     }
     return newNode;
@@ -294,7 +262,7 @@ Variable *addition(Variable* a, Variable* b){
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{
-        printf("Error: Cannot substract %s and %s\n", a->name, b->name);
+        if(DEBUG){printf("Error: Cannot substract %s and %s\n", a->name, b->name);}
         raiseError();
     }
     return newNode;
@@ -337,7 +305,7 @@ Variable* processTr(Variable *a){
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else {
-        printf("Error: Cannot transpose %s\n", a->name);
+        if(DEBUG){printf("Error: Cannot transpose %s\n", a->name);}
         raiseError();
     }
     fprintf(out, "Variable *%s = transpose( %s );\n",  rndstr,  a->name  );
@@ -368,7 +336,7 @@ Variable* processChoose(Variable *a,Variable *b,Variable *c,Variable *d){
     checkExistence(c);
     checkExistence(d);
     if(a->feature != SCA || b->feature != SCA || c->feature != SCA || d->feature != SCA){
-        printf("Error: Cannot choose %s, %s, %s, %s\n", a->name, b->name, c->name, d->name);
+        if(DEBUG){printf("Error: Cannot choose %s, %s, %s, %s\n", a->name, b->name, c->name, d->name);}
         raiseError();
     }
     fprintf(out, "Variable *%s = choose( %s, %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
@@ -386,7 +354,7 @@ Variable* processSqrt(Variable *a){
     }
     checkExistence(a);
     if(a->feature != SCA){
-        printf("Error: Cannot sqrt %s\n", a->name);
+        if(DEBUG){printf("Error: Cannot sqrt %s\n", a->name);}
         raiseError();
     }
     newNode->dim1 = 1;
@@ -417,7 +385,7 @@ Variable* processGetDoubleIndex(Variable *a, Variable *b, Variable *c){
     checkExistence(b);
     checkExistence(c);
     if(a->feature != MAT || b->feature != SCA || c->feature != SCA){
-        printf("Error: Cannot get double index %s, %s, %s\n", a->name, b->name, c->name);
+        if(DEBUG){printf("Error: Cannot get double index %s, %s, %s\n", a->name, b->name, c->name);}
         raiseError();
     }
     fprintf(out, "Variable *%s = getDoubleIndex( %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name  );
@@ -442,7 +410,7 @@ Variable* processGetSingleIndex(Variable *a, Variable *b){
     checkExistence(a);
     checkExistence(b);
     if(a->feature != VEC || b->feature != SCA ){
-        printf("Error: Cannot get double index %s, %s\n", a->name, b->name);
+        if(DEBUG){printf("Error: Cannot get double index %s, %s\n", a->name, b->name);}
         raiseError();
     }
     fprintf(out, "Variable *%s = getSingleIndex( %s, %s );\n",  rndstr,  a->name, b->name  );
@@ -555,11 +523,6 @@ Variable* evaluateList( struct List* list){
     if(stack->size != 1){
         raiseError();
     }
-    // while(stack->top != NULL){
-    //     Variable* var = top(stack);
-    //     pop(stack);
-    //     printf("%s %d\n",var->name, var->feature);
-    // }
     Variable* topp = top(stack);
     if(topp->feature == NUM){
         topp = generateScalarFromNumber(topp);
@@ -573,80 +536,5 @@ Variable* evaluateList( struct List* list){
 /*
 
 choose(i,6,sqrt(x*y-5),choose(4,1, tr ( i ) , 0 )) + choose (4, 1, tr ( x*9 ) , 0 )
-
-
-choose CHOOSE
-( LEFT_PARENTHESIS
-i IDENTIFIER
-, COMMA
-6 NUM
-, COMMA
-sqrt SQRT
-( LEFT_PARENTHESIS
-x IDENTIFIER
-* MULTIPLICATION
-y IDENTIFIER
-- SUBTRACTION
-5 NUM
-) RIGHT_PARENTHESIS
-, COMMA
-choose CHOOSE
-( LEFT_PARENTHESIS
-4 NUM
-, COMMA
-1 NUM
-, COMMA
-tr TR
-( LEFT_PARENTHESIS
-i IDENTIFIER
-) RIGHT_PARENTHESIS
-, COMMA
-0 NUM
-) RIGHT_PARENTHESIS
-) RIGHT_PARENTHESIS
-+ ADDITION
-choose CHOOSE
-( LEFT_PARENTHESIS
-4 NUM
-, COMMA
-1 NUM
-, COMMA
-tr TR
-( LEFT_PARENTHESIS
-x IDENTIFIER
-* MULTIPLICATION
-9 NUM
-) RIGHT_PARENTHESIS
-, COMMA
-0 NUM
-) RIGHT_PARENTHESIS
-i 6 x y * 5 - 4 1 i tr 0 Choose Choose 4 1 x 9 * tr 0 Choose +
-
-
 */
-
-
-
-
-
-
-// Here you can see the stack usage
-
-// struct Stack* temp = createStack();
-// push(temp, 5);
-// push(temp, 6);
-// push(temp, 7);
-// printf("%d\n", top(temp));
-// printf("%d\n", isEmpty(temp));
-// pop(temp);
-// printf("%d\n", top(temp));
-// printf("%d\n", isEmpty(temp));
-// pop(temp);
-// printf("%d\n", top(temp));
-// printf("%d\n", isEmpty(temp));
-// pop(temp);
-// printf("%d\n", isEmpty(temp));
-// printf("%d\n", top(temp));
-
-
 #endif

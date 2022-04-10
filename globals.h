@@ -6,8 +6,11 @@
 
 #include "enums.h"
 
-
+char *output_file_name;
 FILE *out;
+
+const int DEBUG = 0;
+
 int lastNodeId = 0;
 typedef struct ParserNode {
     int nodeId;
@@ -54,6 +57,7 @@ List globalList;
 
 
 int lineCount = 0;
+int nonDecleration = 0;
 
 int CREATING_SCALAR_TOKENS[] = {SCALAR, IDENTIFIER, -1};
 int CREATING_VECTOR_TOKENS[] = {VECTOR, IDENTIFIER, LEFT_BRACKET, NUMBER, RIGHT_BRACKET, -1};

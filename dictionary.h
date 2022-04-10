@@ -3,8 +3,7 @@
 #include <string.h>
 #include "stack_operations.h"
 #include "globals.h"
-
-
+#include "utils.h"
 
 void addToDict(Variable *v){
     dictVars[dictSize++] = v;
@@ -72,8 +71,8 @@ bool isExist(char *name){
 
 void checkExistence(Variable *a){
     if(!isExist(a->name)){
-        printf("Variable %s does not exist.\n", a->name);
-        exit(1);
+        if(DEBUG){printf("Variable %s does not exist.\n", a->name);}
+        raiseError();
     }
 }
 

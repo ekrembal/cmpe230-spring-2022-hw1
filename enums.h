@@ -1,18 +1,6 @@
 #ifndef _enums_h
 #define _enums_h
 
-void raiseError(){
-    printf("Error!\n");
-    exit(1);
-}
-// enum VarType {
-//     TYPE_MATRIX,
-//     TYPE_VECTOR,
-//     TYPE_SCALAR,
-//     TYPE_OPERATION,
-//     TYPE_NUMBER
-// };
-
 enum type{OP, NUM, MAT, VEC, SCA};
 
 // Enum for all token types

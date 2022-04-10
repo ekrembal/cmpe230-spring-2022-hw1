@@ -8,9 +8,12 @@ scalar j
 scalar n
 scalar m
 scalar sum
+
+scalar filterSize
+
+
 n = 5
 m = 5
-scalar filterSize
 filterSize = 3
 
 image = {0 1 0 0 0 1 1 1 0 0 0 1 0 1 0 0 0 1 1 1 0 1 0 1 0}
