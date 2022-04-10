@@ -23,8 +23,8 @@ int main(int argc, char *argv[]) {
     output_file_name[output_file_len - 3] = 'c';
     output_file_name[output_file_len - 2] = '\0';
 
-	printf("input filename is %s\n", input_file_name);
-	printf("output filename is %s\n", output_file_name);
+	// printf("input filename is %s\n", input_file_name);
+	// printf("output filename is %s\n", output_file_name);
 	// Open file
 	FILE *input_file = fopen(input_file_name, "r");
 	if (input_file == NULL) {
@@ -37,6 +37,20 @@ int main(int argc, char *argv[]) {
         printf("Error opening file\n");
         return 1;
     }
+
+    fprintf(out, "#include <stdio.h>\n");
+    fprintf(out, "#include <stdlib.h>\n");
+    fprintf(out, "#include <stdbool.h>\n");
+    fprintf(out, "#include <math.h>\n");
+    fprintf(out, "#define N 1000000\n");
+    fprintf(out, "#define M 1000\n");
+    fprintf(out, "#define EPS 0.00001\n");
+    fprintf(out, "enum type{OP, NUM, MAT, VEC, SCA};typedef struct Variable {char *name;int feature;int dim1,dim2;double val[1000][1000];}Variable;struct Variable * createScalar(){Variable *newNode = (Variable*)malloc(sizeof(Variable));newNode->feature = SCA;newNode->dim1 = 1;newNode->dim2 = 1;return newNode;}struct Variable * createVector(int a){Variable *newNode = (Variable*)malloc(sizeof(Variable));newNode->feature = VEC;newNode->dim1 = a;newNode->dim2 = 1;return newNode;}struct Variable * createMatrix(int a , int b){Variable *newNode = (Variable*)malloc(sizeof(Variable));newNode->feature = MAT;newNode->dim1 = a;newNode->dim2 = b;return newNode;}struct Variable * multiplication(struct Variable * a, struct Variable * b){struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));if( (a->dim1 == 1 && a->dim2 == 1 ) && (b->dim1 == 1 && b->dim2 == 1)){newNode->feature = SCA;newNode->dim1=1;newNode->dim2=1;newNode->val[0][0] = a->val[0][0] * b->val[0][0];}else if( (a->dim1 == 1 && a->dim2 == 1 ) && !(b->dim1 == 1 && b->dim2 == 1) ){newNode->feature = MAT;newNode->dim1=b->dim1;newNode->dim2=b->dim2;for( int i = 0 ; i < b->dim1 ; i++ ){for( int j = 0 ; j < b->dim2 ; j++ ){newNode->val[i][j] = a->val[0][0] * b->val[i][j];}}}else if( !(a->dim1 == 1 && a->dim2 == 1 ) && (b->dim1 == 1 && b->dim2 == 1) ){newNode->feature = MAT;newNode->dim1=a->dim1;newNode->dim2=a->dim2;for( int i = 0 ; i < a->dim1 ; i++ ){for( int j = 0 ; j < a->dim2 ; j++ ){newNode->val[i][j] = b->val[0][0] * a->val[i][j];}}}else if( !(a->dim1 == 1 && a->dim2 == 1 ) && !(b->dim1 == 1 && b->dim2 == 1) ){newNode->feature = MAT;newNode->dim1=a->dim1;newNode->dim2=b->dim2;for( int i = 0 ;  i < a->dim1 ; i++ ){for( int j = 0 ; j < b->dim2 ; j++ ){newNode->val[i][j]=0;for( int k = 0 ; k < a->dim2 ; k++ ){newNode->val[i][j] += (a->val[i][k] * b->val[k][j]);}}}}return newNode;}struct Variable * generateScalarFromNumber(double var){Variable *newNode = (Variable*)malloc(sizeof(Variable));newNode->feature = SCA;newNode->dim1 = 1;newNode->dim2 = 1;newNode->val[0][0]=var;return newNode;}struct Variable * addition( struct Variable *a , struct Variable *b ){struct Variable *newNode = (struct Variable*)malloc(sizeof(struct Variable));newNode->feature = a->feature;newNode->dim1 = a->dim1;newNode->dim2 = a->dim2;for( int i = 0 ;  i < a->dim1 ; i++ ){for(int j = 0 ; j < a->dim2 ; j++ ){newNode->val[i][j] = a->val[i][j] + b->val[i][j];}}return newNode;}struct Variable * substraction(struct Variable *a, struct Variable *b){struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));newNode->feature = a->feature;newNode->dim1 = a->dim1;newNode->dim2 = a->dim2;for( int i = 0 ;  i < a->dim1 ; i++ ){for(int j = 0 ; j < a->dim2 ; j++ ){newNode->val[i][j] = a->val[i][j] - b->val[i][j];}}return newNode;}struct Variable * squareroot( struct Variable *a){struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));newNode->feature = a->feature;newNode->dim1 = 1;newNode->dim2 = 1;newNode->val[0][0]=sqrt(a->val[0][0]);return newNode;}struct Variable * transpose( struct Variable * a){struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));newNode->feature = a->feature;newNode->dim1 = a->dim2;newNode->dim2 = a->dim1;for( int i = 0 ; i < a->dim1 ; i++ ){for( int j = 0 ; j < a->dim2 ; j++ ){newNode->val[j][i] = a->val[i][j];}}return newNode;}double mut(double x){return (x < 0)?-x:x;}struct Variable * choose( struct Variable * expr1, struct Variable * expr2, struct Variable * expr3, struct Variable * expr4 ){if( mut(expr1->val[0][0] - 0) < EPS ){return expr2;}else if( expr1->val[0][0] > 0){return expr3;}else if( expr1->val[0][0] < 0 ){return expr4;}return expr1;}void print( struct Variable * a){for( int i = 0 ; i < a->dim1 ; i++ ){for( int  j = 0 ; j < a->dim2 ; j++ ){if((a->val[i][j] - (int)a->val[i][j])<EPS){printf(\"%%d \",(int)a->val[i][j]);}else{printf(\"%%lf \",a->val[i][j]);}}printf(\"\\n\");}}void printsep(){printf(\"----------\\n\");}bool isLower(struct Variable * a, struct Variable * b){return (a->val[0][0] <= b->val[0][0]);}void increase( struct Variable * a, struct Variable * b){a->val[0][0] += b->val[0][0];return;}struct Variable * getSingleIndexInt(struct Variable * a , int index ){index--;struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));int row = index / a->dim2;int column = index %% a->dim2;newNode->dim1=1;newNode->dim2=1;newNode->feature=SCA;newNode->val[0][0]=a->val[row][column];return newNode;}struct Variable * getSingleIndex(struct Variable * a , struct Variable * index ){index->val[0][0]--;struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));int row = (int)index->val[0][0] / a->dim2;int column = (int)index->val[0][0] %% a->dim2;newNode->dim1=1;newNode->dim2=1;newNode->feature=SCA;newNode->val[0][0]=a->val[row][column];return newNode;}struct Variable * getDoubleIndexInt(struct Variable * a , int x, int y ){struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));newNode->dim1=1;newNode->dim2=1;newNode->feature=SCA;newNode->val[0][0]=a->val[x - 1][y - 1];return newNode;}struct Variable * getDoubleIndex(struct Variable * a , struct Variable * x, struct Variable * y ){struct Variable* newNode = (struct Variable*)malloc(sizeof(struct Variable));newNode->dim1=1;newNode->dim2=1;newNode->feature=SCA;newNode->val[0][0]=a->val[(int)x->val[0][0] - 1][(int)y->val[0][0] - 1];return newNode;}void assign(struct Variable * a, struct Variable * b ){a->dim1 = b->dim1;a->dim2 = b->dim2;a->feature = b->feature;a->name = b->name;for( int i = 0 ; i < 999 ; i++){for( int j  = 0 ;  j  < 999 ; j++){a->val[i][j] = b->val[i][j];}}return;}void assignToFlatten(struct Variable * a , double var , int index ){int row = index / a->dim2;int column = index %% a->dim2;a->val[row][column] = var ;return;}void assignToIndex(struct Variable * a, struct Variable * index, struct Variable * var  ){a->val[(int)index->val[0][0] - 1][0] = var->val[0][0];return;}void assignToDoubleIndex(struct Variable * a, struct Variable * index1, struct Variable* index2, struct Variable * var ){a->val[(int)index1->val[0][0] - 1][(int)index2->val[0][0] - 1] = var->val[0][0];return;}\n");
+    fprintf(out, "int main(){\n");
+
+
+
+
 	// Read file line by line
 	char line[1024];
 	ParserGraph *graph = createParserGraph();
@@ -110,7 +124,7 @@ int main(int argc, char *argv[]) {
             }
 
             Variable * var = getFromDict(tokenChars[0]);
-            printf("Got variable %s with sizes %d %d\n", tokenChars[0], var->dim1, var->dim2);
+            // printf("Got variable %s with sizes %d %d\n", tokenChars[0], var->dim1, var->dim2);
             if(var->feature == SCA){
                 printf("Error in line %d: Variable %s is a scalar\n", lineCount, tokenChars[0]);
                 giveError();
@@ -298,6 +312,7 @@ int main(int argc, char *argv[]) {
             && (tempLeft = expr(2, len - 1, false)) != -1
             ){
                 tempLeft = parseExpression(2, len - 1);
+                printList(&globalList);
                 Variable* expr1 = evaluateList(&globalList);
                 if(!isExist(tokenChars[0])){
                     printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[0]);
@@ -314,12 +329,15 @@ int main(int argc, char *argv[]) {
             } else if(
             tokens[0] == IDENTIFIER
             && (tokens[1] == LEFT_BRACKET)
-            && (tokens[2] == NUMBER)
-            && (tokens[3] == RIGHT_BRACKET)
-            && (tokens[4] == ASSIGNMENT)
-            && (tempLeft = expr(5, len - 1, false)) != -1
+            && (tempLeft = expr(2, len - 1, false)) != -1
+            && (tokens[tempLeft] == RIGHT_BRACKET)
+            && (tokens[tempLeft + 1] == ASSIGNMENT)
+            && (tempLeft = expr(tempLeft + 2, len - 1, false)) != -1
             ){
-                tempLeft = parseExpression(5, len - 1);
+                tempLeft = parseExpression(2, len - 1);
+                Variable* loc1 = evaluateList(&globalList);
+
+                tempLeft = parseExpression(tempLeft + 2, len - 1);
                 Variable* expr1 = evaluateList(&globalList);
                 if(!isExist(tokenChars[0])){
                     printf("Error in line %d: Variable %s does not exist\n", lineCount, tokenChars[0]);
@@ -334,19 +352,27 @@ int main(int argc, char *argv[]) {
                     printf("Error in line %d: Expression in single assingment is not a scalar\n", lineCount);
                     giveError();
                 }
+                if(loc1->feature != SCA){
+                    printf("Error in line %d: Expression in single assingment is not a scalar\n", lineCount);
+                    giveError();
+                }
 
-                fprintf(out, "assignToSingleIndex(%s, %s, %s);\n", tokenChars[0], tokenChars[3], expr1->name);
+                fprintf(out, "assignToSingleIndex(%s, %s, %s);\n", tokenChars[0], loc1->name, expr1->name);
             } else if(
             tokens[0] == IDENTIFIER
             && (tokens[1] == LEFT_BRACKET)
-            && (tokens[2] == NUMBER)
-            && (tokens[3] == COMMA)
-            && (tokens[4] == NUMBER)
-            && (tokens[5] == RIGHT_BRACKET)
-            && (tokens[6] == ASSIGNMENT)
-            && (tempLeft = expr(7, len - 1, false)) != -1
+            && (tempLeft = expr(2, len - 1, false)) != -1
+            && (tokens[tempLeft] == COMMA)
+            && (tempLeft = expr(tempLeft + 1, len - 1, false)) != -1
+            && (tokens[tempLeft] == RIGHT_BRACKET)
+            && (tokens[tempLeft + 1] == ASSIGNMENT)
+            && (tempLeft = expr(tempLeft + 2, len - 1, false)) != -1
             ){
-                tempLeft = parseExpression(7, len - 1);
+                tempLeft = parseExpression(2, len - 1);
+                Variable* loc1 = evaluateList(&globalList);
+                tempLeft = parseExpression(tempLeft + 1, len - 1);
+                Variable* loc2 = evaluateList(&globalList);
+                tempLeft = parseExpression(tempLeft + 2, len - 1);
                 Variable* expr1 = evaluateList(&globalList);
 
                 if(!isExist(tokenChars[0])){
@@ -358,11 +384,11 @@ int main(int argc, char *argv[]) {
                     printf("Error in line %d: Variable %s is not a vector\n", lineCount, tokenChars[0]);
                     giveError();
                 }
-                if(expr1->feature != SCA){
+                if(expr1->feature != SCA || loc1->feature != SCA || loc2->feature != SCA){
                     printf("Error in line %d: Expression in single assingment is not a scalar\n", lineCount);
                     giveError();
                 }
-                fprintf(out, "assignToDoubleIndex(%s, %s, %s, %s);\n", tokenChars[0], tokenChars[2], tokenChars[4], expr1->name);
+                fprintf(out, "assignToDoubleIndex(%s, %s, %s, %s);\n", tokenChars[0], loc1->name, loc2->name, expr1->name);
             } else {
                 printf("Buradayken error veri expr assignment bulunamadi\n");
                 printf("%s %d\n", line, len);
@@ -373,8 +399,13 @@ int main(int argc, char *argv[]) {
 		// printf("%s\n", line);
 
 	}
+    if(forLoopType!=0){
+        printf("Error in line %d: For loop not ended\n", lineCount);
+        raiseError();
+    }
 	// Close file
 	fclose(input_file);
+    fprintf(out, "return 0;\n}\n");
     fclose(out);
 	return 0;
 }

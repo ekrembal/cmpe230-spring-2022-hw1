@@ -24,7 +24,7 @@ int factor(int left, int right, bool flag){
 
 
         }
-        printf("YEYYY(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n");
+        // printf("YEYYY(%d, %d)->", left, right); for(int i = left; i <= right; i++) printf("%s ", tokenChars[i]); printf("\n");
         return tempLeft+1;
 	}
     tempLeft = 0;

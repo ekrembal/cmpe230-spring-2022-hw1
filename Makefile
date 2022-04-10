@@ -8,4 +8,5 @@ build:
 	./matlang2c mat_codes/handmade1.mat
 	./matlang2c mat_codes/handmade2.mat
 	./matlang2c mat_codes/inv2by2.mat
-	# ./matlang2c mat_codes/ex2.mat
+	./matlang2c mat_codes/convolution.mat
+	./matlang2c mat_codes/operations.mat
