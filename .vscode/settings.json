@@ -4,7 +4,8 @@
         "stdio.h": "c",
         "dictionary.h": "c",
         "assert.h": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "math.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

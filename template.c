@@ -173,7 +173,7 @@ void print( struct Variable * a){
     }
 }
 void printsep(){
-    printf("----------\n");
+    printf("------------\n");
 }
 bool isLower(struct Variable * a, struct Variable * b){
     return (a->val[0][0] <= b->val[0][0]);
