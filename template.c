@@ -162,7 +162,7 @@ struct Variable * choose( struct Variable * expr1, struct Variable * expr2, stru
 void print( struct Variable * a){
     for( int i = 0 ; i < a->dim1 ; i++ ){
         for( int  j = 0 ; j < a->dim2 ; j++ ){
-            if((a->val[i][j] - (int)a->val[i][j])<EPS){
+            if(mut(a->val[i][j] - (int)a->val[i][j])<EPS){
                 printf("%d ",(int)a->val[i][j]);
             }
             else{
