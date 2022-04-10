@@ -152,7 +152,7 @@ Variable* generateScalarFromNumber(Variable *var){
     newVar->feature = SCA;
     newVar->dim1 = 1;
     newVar->dim2 = 1;
-    fprintf(out, "Variable *%s = generateScalarFromNumber(%s);\n", newVar->name, var->name);
+    fprintf(out, "Variable *_%s = generateScalarFromNumber(%s);\n", newVar->name, var->name);
     addNewScalar(newVar->name);
     return newVar;
 }
@@ -172,28 +172,28 @@ Variable *multiplication(Variable* a, Variable* b){
         newNode->feature = SCA;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = multiplication(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewScalar(newNode->name);
     }
     else if(a->dim2 == b->dim1){
         newNode->feature = MAT;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = multiplication(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else if(a->feature == SCA && b->feature == MAT){
         newNode->feature = MAT;
         newNode->dim1 = b->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = multiplication(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else if(a->feature == MAT && b->feature == SCA){
         newNode->feature = MAT;
         newNode->dim1 = a->dim1;
         newNode->dim2 = a->dim2;
-        fprintf(out, "Variable *%s = multiplication(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = multiplication(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{
@@ -218,14 +218,14 @@ Variable *substraction(Variable* a, Variable* b){
         newNode->feature = SCA;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = substraction(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = substraction(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewScalar(newNode->name);
     }
     else if(a->dim1 == b->dim1 && a->dim2 == b->dim2){
         newNode->feature = MAT;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = substraction(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = substraction(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{
@@ -251,14 +251,14 @@ Variable *addition(Variable* a, Variable* b){
         newNode->feature = SCA;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = addition(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = addition(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewScalar(newNode->name);
     }
     else if(a->dim1 == b->dim1 && a->dim2 == b->dim2){
         newNode->feature = MAT;
         newNode->dim1 = a->dim1;
         newNode->dim2 = b->dim2;
-        fprintf(out, "Variable *%s = addition(%s, %s);\n", newNode->name, a->name, b->name);
+        fprintf(out, "Variable *_%s = addition(_%s, _%s);\n", newNode->name, a->name, b->name);
         addNewMatrix(newNode->name, newNode->dim1, newNode->dim2);
     }
     else{
@@ -295,7 +295,7 @@ Variable* processTr(Variable *a){
         newNode->dim1 = a->dim1;
         newNode->dim2 = a->dim2;
         newNode->feature= SCA;
-        fprintf(out, "Variable *%s = transpose(%s);\n", newNode->name, a->name);
+        fprintf(out, "Variable *_%s = transpose(_%s);\n", newNode->name, a->name);
         addNewScalar(newNode->name);
     }
     else if(a->feature == MAT || a->feature==VEC){
@@ -308,7 +308,7 @@ Variable* processTr(Variable *a){
         if(DEBUG){printf("Error: Cannot transpose %s\n", a->name);}
         raiseError();
     }
-    fprintf(out, "Variable *%s = transpose( %s );\n",  rndstr,  a->name  );
+    fprintf(out, "Variable *_%s = transpose( _%s );\n",  rndstr,  a->name  );
     return newNode;
 }
 
@@ -339,7 +339,7 @@ Variable* processChoose(Variable *a,Variable *b,Variable *c,Variable *d){
         if(DEBUG){printf("Error: Cannot choose %s, %s, %s, %s\n", a->name, b->name, c->name, d->name);}
         raiseError();
     }
-    fprintf(out, "Variable *%s = choose( %s, %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
+    fprintf(out, "Variable *_%s = choose( _%s, _%s, _%s, _%s );\n",  rndstr,  a->name, b->name, c->name, d->name  );
     addNewScalar(newNode->name);
     return newNode;
 }
@@ -360,7 +360,7 @@ Variable* processSqrt(Variable *a){
     newNode->dim1 = 1;
     newNode->dim2 = 1;
 
-    fprintf(out, "Variable *%s = squareroot( %s );\n",  rndstr,  a->name  );
+    fprintf(out, "Variable *_%s = squareroot( _%s );\n",  rndstr,  a->name  );
     addNewScalar(newNode->name);
     return newNode;
 }
@@ -388,7 +388,7 @@ Variable* processGetDoubleIndex(Variable *a, Variable *b, Variable *c){
         if(DEBUG){printf("Error: Cannot get double index %s, %s, %s\n", a->name, b->name, c->name);}
         raiseError();
     }
-    fprintf(out, "Variable *%s = getDoubleIndex( %s, %s, %s );\n",  rndstr,  a->name, b->name, c->name  );
+    fprintf(out, "Variable *_%s = getDoubleIndex( _%s, _%s, _%s );\n",  rndstr,  a->name, b->name, c->name  );
     addNewScalar(newNode->name);
     return newNode;
 }
@@ -413,7 +413,7 @@ Variable* processGetSingleIndex(Variable *a, Variable *b){
         if(DEBUG){printf("Error: Cannot get double index %s, %s\n", a->name, b->name);}
         raiseError();
     }
-    fprintf(out, "Variable *%s = getSingleIndex( %s, %s );\n",  rndstr,  a->name, b->name  );
+    fprintf(out, "Variable *_%s = getSingleIndex( _%s, _%s );\n",  rndstr,  a->name, b->name  );
     addNewScalar(newNode->name);
     return newNode;
 }

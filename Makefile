@@ -16,3 +16,13 @@ build:
 	./matlang2c mat_codes/ex17.mat
 	./matlang2c mat_codes/ex19.mat
 	./matlang2c mat_codes/ex20.mat
+	./matlang2c mat_codes/input_custom/c1.mat
+	./matlang2c mat_codes/input_custom/c2.mat
+	./matlang2c mat_codes/input_custom/c3.mat
+	./matlang2c mat_codes/input_custom/c4.mat
+	./matlang2c mat_codes/input_custom/c5.mat
+	./matlang2c mat_codes/input_custom/c6.mat
+	./matlang2c mat_codes/input_custom/c7.mat
+	./matlang2c mat_codes/input_custom/c8.mat
+	./matlang2c mat_codes/input_custom/c9.mat
+	./matlang2c mat_codes/input_custom/c10.mat
